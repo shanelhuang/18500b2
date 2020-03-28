@@ -3,8 +3,11 @@
 import os
 from pgm_utils import pgm_save
 
-MAP_SIZE = 800
-CHUNK_SIZE = 10
+MAP_SIZE = 800 # pixel size of input
+CHUNK_SIZE = 10 # compression factor
+MAX_SEARCH = 5 # max chunks outward to search
+SEARCH_ROW = 39 # row, col to begin the nav plan (array starts at 0)
+SEARCH_COL = 34
 
 # read in binary file
 dirname = os.path.dirname(__file__)
@@ -16,6 +19,7 @@ with open(filename, "rb") as binary_file:
 # iterate map chunk by chunk and average pixels into one byte
 num_chunks = MAP_SIZE // CHUNK_SIZE
 compressed_map = bytearray(num_chunks * num_chunks)
+compressed_map_2d = [[0 for x in range(num_chunks)] for x in range(num_chunks)]
 
 for chunk_row in range(num_chunks):
 	for chunk_col in range(num_chunks):
@@ -25,7 +29,21 @@ for chunk_row in range(num_chunks):
 			for sub_col in range(CHUNK_SIZE):
 				sum += bytemap[(chunk_row * CHUNK_SIZE + sub_row) * MAP_SIZE + (chunk_col * CHUNK_SIZE + sub_col)]
 		avg = sum // (CHUNK_SIZE * CHUNK_SIZE)
+		if(avg < 127):
+			avg = 0
 		compressed_map[(chunk_row * num_chunks) + chunk_col] = avg
+		compressed_map_2d[chunk_row][chunk_col] = avg
+
+# approx middle pixel [39][34]
+compressed_map[(SEARCH_ROW) * 80 + SEARCH_COL] = 0
+
+# expanding radial search outward from given point
+row = 39
+col = 34
+for row_offset in range(-MAX_SEARCH - 1, MAX_SEARCH):
+	for col_offset in range(-MAX_SEARCH -1, MAX_SEARCH):
+		
+
 
 #print(compressed_map)
 pgm_save('compressed_map.pgm', compressed_map, (num_chunks, num_chunks))
