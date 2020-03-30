@@ -57,7 +57,7 @@ for chunk_row in range(num_chunks):
 # approx middle pixel
 compressed_map[(SEARCH_ROW) * 80 + SEARCH_COL] = 0
 
-# expanding radial search outward from given point
+# raw distance search from given point
 outuple = search()
 if(outuple is not None):
 	(dest_row, dest_col) = outuple
@@ -70,7 +70,7 @@ else:
 
 
 #print(compressed_map)
-pgm_save('compressed_map.pgm', compressed_map, (num_chunks, num_chunks))
+pgm_save('../resources/compressed_map.pgm', compressed_map, (num_chunks, num_chunks))
 
 
 
