@@ -16,3 +16,4 @@ with open(filename, "rb") as binary_file:
 map = map.Map(bytemap)
 map.compress()
 map.printCompressedMap()
+map.printOverlayMap()
