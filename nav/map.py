@@ -68,7 +68,7 @@ class Map:
 		Save compressed_map to a .pgm file in the /resources folder.
 		'''
 		pgm_save('../resources/compressed_map.pgm', self.compressed_map, (constants.NUM_CHUNKS, constants.NUM_CHUNKS))
-
+		
 
 	def printOverlayMap(self):
 		'''
@@ -101,6 +101,29 @@ class Map:
 
 		im.save('../resources/overlay_map.png')
 		im.show()
+
+	def chooseDestination(self):
+		'''
+		Performs a radially outward expanding search from current robot pos for 
+		a square that fits the defined destination threshold for exploredness.
+		'''
+
+		for distance in range(constants.MIN_SEARCH, constants.MAX_SEARCH):
+			print(distance)
+			for row_offset in range(-distance, distance):
+				cur_row = self.robot_pos[0] + row_offset
+				if(cur_row < 0 or cur_row >= constants.NUM_CHUNKS):
+					continue
+				for col_offset in range(-distance, distance):
+					cur_col = self.robot_pos[1] + col_offset
+					if(cur_col < 0 or cur_col >= constants.NUM_CHUNKS):
+						continue
+					if((self.compressed_map[cur_row * constants.NUM_CHUNKS + cur_col] < constants.DEST_THRESHOLD) and 
+							MapData(self.data_map[cur_row * constants.NUM_CHUNKS + cur_col]) != MapData.WALL):
+						self.dest = [cur_row, cur_col]
+						return cur_row, cur_col
+		return None
+
 
 
 
