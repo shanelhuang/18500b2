@@ -21,5 +21,6 @@ map.findWalls()
 map.robot_pos = [40, 40]
 map.dest = [45, 45]
 print(map.chooseDestination())
+map.getPath()
 
 map.printOverlayMap()
