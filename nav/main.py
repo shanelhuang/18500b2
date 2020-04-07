@@ -6,8 +6,6 @@ import os
 
 
 
-
-
 # read in binary file
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, '../resources/map.bin')
