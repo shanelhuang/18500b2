@@ -78,7 +78,7 @@ prevTime = 0
 
 MAP_SIZE_PIXELS         = 500
 MAP_SIZE_METERS         = 10
-LIDAR_DEVICE            = '/dev/ttyUSB0'
+LIDAR_DEVICE            = '/dev/ttyUSB1'
 
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one 
 # scan, but on slower computers you'll get an empty map and unchanging position
@@ -223,19 +223,19 @@ class TetheredDriveApp(Tk):
                 motionChange = True
             else:
                 print repr(k), "not handled"
-        elif event.type == '3': # KeyRelease; need to figure out how to get constant
-            if k == 'UP':
-                self.callbackKeyUp = False
-                motionChange = True
-            elif k == 'DOWN':
-                self.callbackKeyDown = False
-                motionChange = True
-            elif k == 'LEFT':
-                self.callbackKeyLeft = False
-                motionChange = True
-            elif k == 'RIGHT':
-                self.callbackKeyRight = False
-                motionChange = True
+        # elif event.type == '3': # KeyRelease; need to figure out how to get constant
+        #     if k == 'UP':
+        #         self.callbackKeyUp = False
+        #         motionChange = True
+        #     elif k == 'DOWN':
+        #         self.callbackKeyDown = False
+        #         motionChange = True
+        #     elif k == 'LEFT':
+        #         self.callbackKeyLeft = False
+        #         motionChange = True
+        #     elif k == 'RIGHT':
+        #         self.callbackKeyRight = False
+        #         motionChange = True
             
         if motionChange == True:
             velocity = 0
@@ -268,7 +268,7 @@ class TetheredDriveApp(Tk):
             tkMessageBox.showinfo('Oops', "You're already connected!")
             return
 
-        port = '/dev/ttyUSB1'
+        port = '/dev/ttyUSB0'
 
         if port is not None:
             print("Trying " + str(port) + "... ")
@@ -414,6 +414,6 @@ if __name__ == "__main__":
 
     app = TetheredDriveApp()
     app.onConnect()
-    thread.start_new_thread(slamThread, ())
+    # thread.start_new_thread(slamThread, ())
     app.mainloop()
 
