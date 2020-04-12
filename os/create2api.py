@@ -23,8 +23,6 @@
 # THE SOFTWARE.
 
 
-
-
 import json
 import serial
 import struct
@@ -90,12 +88,12 @@ class Config(object):
             with open(self.fname) as fileData:
                 try:
                     self.data = json.load(fileData)
-                    print 'Loaded config and opcodes'
-                except ValueError, e:
-                    print 'Could not load config'
+                    print('Loaded config and opcodes')
+                except ValueError as e:
+                    print('Could not load config')
         else:
             #couldn't find file
-            print "No config file found"
+            print("No config file found")
             raise ValueError('Could not find config')
     
     
@@ -113,12 +111,12 @@ class SerialCommandInterface(object):
         self.ser = serial.Serial()
         self.ser.port = com
         self.ser.baudrate = baud
-        print self.ser.name
+        print(self.ser.name)
         if self.ser.isOpen(): 
-            print "port was open"
+            print("port was open")
             self.ser.close()
         self.ser.open()
-        print "opened port"
+        print("opened port")
     
     def send(self, opcode, data):
         #First thing to do is convert the opcode to a tuple.
@@ -178,7 +176,7 @@ class Create2(object):
         """Closes up serial ports and terminates connection to the Create2
         """
         self.SCI.Close()
-        print 'Disconnected'
+        print('Disconnected')
     
     
     """ START OF OPEN INTERFACE COMMANDS
@@ -560,7 +558,7 @@ class Create2(object):
         #creates a list for serial codes
         play_list = []
         #convert the durations to integers
-        duration_list = map(int, duration_list)
+        duration_list = list(map(int, duration_list))
         noError = True
         
         if noError:
@@ -1695,5 +1693,4 @@ class sensorPacketDecoder(object):
         """
         return struct.unpack('B', byte)[0]
     
-
 
