@@ -43,3 +43,5 @@ tmp/
 
 # Nohup
 nohup.out
+
+*.pyc

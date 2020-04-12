@@ -1,3 +1,5 @@
+import constants
+
 class Node():
 
     def __init__(self, parent=None, position=None):
@@ -54,14 +56,14 @@ def astar(maze, start, end):
         # Generate children
         children = []
         # Adjacent squares
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             node_position = (
                 current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
             # Make sure in range
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) - 1) or node_position[1] < 0:
                 continue
             # Make sure not a wall
-            if maze[node_position[0]][node_position[1]] != MapData.WALL:
+            if maze[node_position[0]][node_position[1]] == constants.MapData.WALL:
                 continue
             new_node = Node(current_node, node_position)
             children.append(new_node)
