@@ -19,8 +19,8 @@ map.compress()
 #map.printCompressedMap()
 map.findWalls()
 map.robot_pos = [40, 40]
-map.dest = [45, 45]
-print(map.chooseDestination())
-map.getPath()
+map.chooseDestination()
+#map.dest = [40, 60]
+#map.getPath()
 
 map.printOverlayMap()

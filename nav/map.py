@@ -1,5 +1,5 @@
 
-from enum import IntEnum
+
 from PIL import Image
 import PIL
 import constants
@@ -7,16 +7,6 @@ from pgm_utils import pgm_save
 import io
 import numpy
 import search
-
-
-class MapData(IntEnum):
-    '''
-    Custom encoding for internal data storage.
-    '''
-    NULL = 0
-    WALL = 1
-    # ROBOT = 2
-    # DESTINATION = 3
 
 
 class Map:
@@ -27,8 +17,8 @@ class Map:
 
     # attributes
     byte_map = bytearray(constants.MAP_SIZE * constants.MAP_SIZE)
-    compressed_map = bytearray(constants.NUM_CHUNKS * constants.NUM_CHUNKS)
-    data_map = bytearray(constants.MAP_SIZE * constants.MAP_SIZE)
+    compressed_map = [[0 for i in range(constants.NUM_CHUNKS)] for j in range(constants.NUM_CHUNKS)]
+    data_map = [[0 for i in range(constants.NUM_CHUNKS)] for j in range(constants.NUM_CHUNKS)]
     robot_pos = [0, 0]
     dest = [1, 1]
 
@@ -50,8 +40,7 @@ class Map:
                         sum += self.byte_map[(chunk_row * constants.CHUNK_SIZE + sub_row) *
                                              constants.MAP_SIZE + (chunk_col * constants.CHUNK_SIZE + sub_col)]
                 avg = sum // (constants.CHUNK_SIZE * constants.CHUNK_SIZE)
-                self.compressed_map[(
-                    chunk_row * constants.NUM_CHUNKS) + chunk_col] = avg
+                self.compressed_map[chunk_row][chunk_col] = avg
 
     def findWalls(self):
         '''
@@ -60,9 +49,11 @@ class Map:
 
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
-                if(self.compressed_map[i * constants.NUM_CHUNKS + j] < 127):
-                    self.data_map[i * constants.NUM_CHUNKS +
-                                  j] = int(MapData.WALL)
+                if(self.compressed_map[i][j] < 127):
+                    self.data_map[i][j] = constants.MapData.WALL
+
+        # for i in range(40,61):
+        # 	print(self.data_map[40][i])
 
     def printCompressedMap(self):
         '''
@@ -82,24 +73,21 @@ class Map:
 
         for i in range(im.size[0]):
             for j in range(im.size[1]):
-                index = (i * constants.NUM_CHUNKS) + j
-                datum = MapData(self.data_map[index])
-                if(datum != MapData.NULL):
+                datum = constants.MapData(self.data_map[i][j])
+                if(datum != constants.MapData.NULL):
                     # paint data
-                    if(datum == MapData.WALL):
-                        pixels[j, i] = (0, 0, 255)
-                    # elif(datum == MapData.ROBOT):
-                    # 	pixels[j,i] = (255,0,0)
-                    # elif(datum == MapData.DESTINATION):
-                    # 	pixels[j,i] = (0,255,0)
+                    if(datum == constants.MapData.WALL):
+                      pixels[j, i] = (0, 0, 255) #indices reversed for image
+                    elif(datum == constants.MapData.PATH):
+                    	pixels[j, i] = (255, 255, 0)
                 else:
                     # paint map
-                    pixel = self.compressed_map[index]
+                    pixel = self.compressed_map[i][j]
                     pixels[j, i] = (pixel, pixel, pixel)
 
         # paint robot_pos and dest
-        pixels[self.robot_pos[0], self.robot_pos[1]] = (255, 0, 0)
-        pixels[self.dest[0], self.dest[1]] = (0, 255, 0)
+        pixels[self.robot_pos[1], self.robot_pos[0]] = (255, 0, 0)
+        pixels[self.dest[1], self.dest[0]] = (0, 255, 0)
 
         im.save('../resources/overlay_map.png')
         im.show()
@@ -111,7 +99,6 @@ class Map:
         '''
 
         for distance in range(constants.MIN_SEARCH, constants.MAX_SEARCH):
-            print(distance)
             for row_offset in range(-distance, distance):
                 cur_row = self.robot_pos[0] + row_offset
                 if(cur_row < 0 or cur_row >= constants.NUM_CHUNKS):
@@ -120,8 +107,8 @@ class Map:
                     cur_col = self.robot_pos[1] + col_offset
                     if(cur_col < 0 or cur_col >= constants.NUM_CHUNKS):
                         continue
-                    if((self.compressed_map[cur_row * constants.NUM_CHUNKS + cur_col] < constants.DEST_THRESHOLD) and
-                       MapData(self.data_map[cur_row * constants.NUM_CHUNKS + cur_col]) != MapData.WALL):
+                    if((self.compressed_map[cur_row][cur_col] < constants.DEST_THRESHOLD) and
+                       constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL):
                         self.dest = [cur_row, cur_col]
                         return cur_row, cur_col
         return None
@@ -131,5 +118,7 @@ class Map:
         start = (self.robot_pos[0], self.robot_pos[1])
         end = (self.dest[0], self.dest[1])
         path = search.astar(maze, start, end)
+        for grid in path:
+        	self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
         print(path)
 
