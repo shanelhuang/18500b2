@@ -21,7 +21,6 @@ class Map:
     data_map = [[0 for i in range(constants.NUM_CHUNKS)] for j in range(constants.NUM_CHUNKS)]
     robot_pos = [0, 0]
     dest = [1, 1]
-    direction = constants.Heading.NORTH
 
     def __init__(self, byte_map):
         self.byte_map = byte_map
