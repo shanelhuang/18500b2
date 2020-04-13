@@ -10,9 +10,9 @@ import queue
 
 if __name__ == "__main__":
 	# robot initialization
-	# bot = create2api.Create2()
-	# bot.start()
-	# bot.safe()
+	bot = create2api.Create2()
+	bot.start()
+	bot.safe()
 
 	# global variables
 	directionsQueue = queue.Queue()
