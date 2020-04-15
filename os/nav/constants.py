@@ -11,7 +11,7 @@ NUM_CHUNKS = MAP_SIZE // CHUNK_SIZE
 DEST_THRESHOLD = 150 # how unexplored constitutes a valid destination
 
 # roomba conversions
-
+# 600mm /rotation at 100mm/s
 
 
 class MapData(IntEnum):
