@@ -1,11 +1,15 @@
 import nav.map as map
 import create2api
 import threading
-import input
+import move
 import time
 import nav.constants as constants
 import os
 import queue
+import rpslam
+import sensors
+from nav.constants import MAP_SIZE_METERS as MAP_SIZE_METERS
+from nav.constants import MAP_SIZE as MAP_SIZE_PIXELS
 
 
 
@@ -19,36 +23,42 @@ if __name__ == "__main__":
 
 	# global variables
 	directionsQueue = queue.Queue()
-	SLAMrot = 0
-	SLAMvel = 0
+	SLAMvals = [0,0]
+	foundObstacle = [False]
+	mapbytes = bytearray(MAP_SIZE_PIXELS * MAP_SIZE_PIXELS)
 
 	# read user input thread
-	moveThread = threading.Thread(target = input.run, args=(directionsQueue,SLAMrot,SLAMvel))
+	moveThread = threading.Thread(target = move.run, args=(directionsQueue,SLAMvals))
 	moveThread.start()
 
 	# slam thread 
-	slamThread = threading.Thread(target = rpslam.slam, args=(SLAMrot,SLAMvel))
+	slamThread = threading.Thread(target = rpslam.slam, args=(SLAMvals,mapbytes))
 	slamThread.start()
 
+	#obstacle thread 
+	obstacleThread = threading.Thread(target = sensors.monitor, args=(foundObstacle,))
+	obstacleThread.start()
 
 	# read in binary file
-	dirname = os.path.dirname(__file__)
-	filename = os.path.join(dirname, './resources/map.bin')
+	# dirname = os.path.dirname(__file__)
+	# filename = os.path.join(dirname, './resources/map.bin')
 
-	with open(filename, "rb") as binary_file:
-		bytemap = bytearray(binary_file.read())
+	# with open(filename, "rb") as binary_file:
+	# 	bytemap = bytearray(binary_file.read())
 
 	# create map
-	map = map.Map(bytemap)
-	map.compress()
-	#map.printCompressedMap()
-	map.findWalls()
-	map.robot_pos = [40, 40]
-	#map.chooseDestination()
-	map.dest = [40, 60]
-	directions = map.getPath()
 
-	for step in directions:
-		directionsQueue.put(step)
+	while True:
+		currMap = map.Map(mapbytes)
+		currMap.compress()
+		#map.printCompressedMap()
+		currMap.findWalls()
+		currMap.robot_pos = [0, 0]
+		currMap.chooseDestination()
+		directions = map.getPath()
 
-	map.printOverlayMap()
+		for step in directions:
+		 	directionsQueue.put(step)
+		 	print(step)
+
+		# currMap.printOverlayMap()

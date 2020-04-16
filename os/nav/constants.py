@@ -5,10 +5,12 @@ MAP_SIZE = 800 # pixel size of input
 CHUNK_SIZE = 10 # compression factor
 MIN_SEARCH = 3 # start searching this far away
 MAX_SEARCH = 10 # max chunks outward to search
-SEARCH_ROW = 40 # row, col to begin the nav plan (array starts at 0)
-SEARCH_COL = 35
 NUM_CHUNKS = MAP_SIZE // CHUNK_SIZE
 DEST_THRESHOLD = 150 # how unexplored constitutes a valid destination
+TURN_SPEED = 100
+TURN_SPEED_DEGREES = 60
+SPEED = 200
+MAP_SIZE_METERS         = 10
 
 # roomba conversions
 # 600mm /rotation at 100mm/s
@@ -30,4 +32,10 @@ class Heading(IntEnum):
 	NORTH = 90
 	WEST = 180
 	SOUTH = 270
+
+class Turn(IntEnum):
+	RIGHT = 1.5
+	BACK = 3 
+	LEFT = 1.5
+
 	

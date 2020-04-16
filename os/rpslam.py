@@ -19,9 +19,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-MAP_SIZE_PIXELS         = 500
-MAP_SIZE_METERS         = 10
-LIDAR_DEVICE            = '/dev/ttyUSB1'
+
+LIDAR_DEVICE            = '/dev/ttyUSB0'
 
 
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one 
@@ -37,13 +36,16 @@ from roboviz import MapVisualizer
 import time
 from nav.pgm_utils import pgm_save
 import copy
+from nav.constants import MAP_SIZE_METERS as MAP_SIZE_METERS
+from nav.constants import MAP_SIZE as MAP_SIZE_PIXELS
+
 
 
 # matplotlib.use('tkagg')
 
 
 
-def slam(SLAMrot,SLAMvel):
+def slam(SLAMvals, mapbytes):
 
     trajectory = []
 
@@ -60,7 +62,7 @@ def slam(SLAMrot,SLAMvel):
     trajectory = []
 
     # Initialize empty map
-    mapbytes = bytearray(MAP_SIZE_PIXELS * MAP_SIZE_PIXELS)
+    # mapbytes = bytearray(MAP_SIZE_PIXELS * MAP_SIZE_PIXELS)
 
     # Create an iterator to collect scan data from the RPLidar
     iterator = lidar.iter_scans()
@@ -80,6 +82,9 @@ def slam(SLAMrot,SLAMvel):
     print("start")
 
     while True:
+
+        SLAMvel = SLAMvals[0]  
+        SLAMrot = SLAMvals[1]  
 
         # Extract (quality, angle, distance) triples from current scan
         items = [item for item in next(iterator)]
