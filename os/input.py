@@ -3,7 +3,7 @@ import threading
 import nav.constants as constants
 
 
-def run(directionsQueue):
+def run(directionsQueue,SLAMrot,SLAMvel):
 	heading = constants.Heading.NORTH
 	print('thread')
 	print('\n')

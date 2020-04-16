@@ -8,18 +8,27 @@ import os
 import queue
 
 
+
+
 if __name__ == "__main__":
 	# robot initialization
-	# bot = create2api.Create2()
-	# bot.start()
-	# bot.safe()
+	bot = create2api.Create2()
+	bot.start()
+	bot.safe()
+
 
 	# global variables
 	directionsQueue = queue.Queue()
+	SLAMrot = 0
+	SLAMvel = 0
 
 	# read user input thread
-	moveThread = threading.Thread(target = input.run, args=(directionsQueue,))
+	moveThread = threading.Thread(target = input.run, args=(directionsQueue,SLAMrot,SLAMvel))
 	moveThread.start()
+
+	# slam thread 
+	slamThread = threading.Thread(target = rpslam.slam, args=(SLAMrot,SLAMvel))
+	slamThread.start()
 
 
 	# read in binary file
