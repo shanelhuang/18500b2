@@ -10,11 +10,12 @@ def monitor(currentProgram, bot):
 		print(json.dumps(bot.sensor_state, indent=4, sort_keys=False))
 		currentProgram.foundObstacle = True
 
-# bot = create2api.Create2()
-# bot.start()
-# bot.safe()
-# json.dumps(bot.sensor_state, indent=4)
-# bot.get_packet(100)
-# while True:
-# 	print(json.dumps(bot.sensor_state, indent=4, sort_keys=False))
-# 	foundObstacle[0] = True
+bot = create2api.Create2('/dev/ttyUSB0')
+bot.start()
+bot.safe()
+json.dumps(bot.sensor_state, indent=4)
+bot.get_packet(100)
+while True:
+	print(bot.sensor_state["angle"])
+	bot.get_packet(100)
+	# foundObstacle[0] = True

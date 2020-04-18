@@ -46,6 +46,8 @@ class Map:
         '''
         Defines all pixels with <127 value to be a wall.
         '''
+        self.data_map = [[0 for i in range(constants.NUM_CHUNKS)]
+                    for j in range(constants.NUM_CHUNKS)]
 
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
@@ -65,8 +67,8 @@ class Map:
     def printOverlayMap(self, robot_pos, dest):
         '''
         Overlay data_map on compressed_map in color, and save to a .png file.
-        '''
-
+        ''' 
+        # print(self.data_map)
         im = PIL.Image.new(mode="RGB", size=(
             constants.NUM_CHUNKS, constants.NUM_CHUNKS))
         pixels = im.load()
@@ -91,7 +93,7 @@ class Map:
         pixels[dest[1], dest[0]] = (0, 255, 0)
 
         im.save('./resources/overlay_map.png')
-        im.show()
+        # im.show()
 
     def chooseDestination(self, robot_pos):
         '''

@@ -4,6 +4,38 @@ import nav.constants as constants
 import time
 
 
+# def run(currentProgram, bot):
+#     while (currentProgram.programStatus != constants.Status.STOP):
+#         cmd = input()
+#         if (cmd == 'f'):
+#             print("started forward")
+#             bot.drive_straight(constants.SPEED)
+#             currentProgram.SLAMvals[0] = constants.SPEED
+#             currentProgram.SLAMvals[1] = 0
+#         elif (cmd == 'b'):
+#             print("started back")
+#             bot.drive_straight(-constants.SPEED)
+#             currentProgram.SLAMvals[0] = -constants.SPEED
+#             currentProgram.SLAMvals[1] = 0        
+#         elif (cmd == 'r'):
+#             print("started right")
+#             bot.turn_clockwise(constants.TURN_SPEED)
+#             currentProgram.SLAMvals[0] = 0
+#             currentProgram.SLAMvals[1] = constants.TURN_SPEED_DEGREES    
+#         elif (cmd == 'l'):
+#             print("started left")
+#             bot.turn_counter_clockwise(constants.TURN_SPEED)
+#             currentProgram.SLAMvals[0] = 0
+#             currentProgram.SLAMvals[1] = -constants.TURN_SPEED_DEGREES 
+#         elif (cmd == 's'):
+#             print("stopped")
+#             bot.drive_straight(0)
+#             currentProgram.SLAMvals[0] = 0
+#             currentProgram.SLAMvals[1] = 0 
+#         else:
+#             print("bad command")
+
+
 def run(currentProgram, bot):
     heading = constants.Heading.NORTH
     print("move thread")

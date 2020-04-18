@@ -24,3 +24,4 @@ while True:
 		bot.drive_straight(0)
 	else:
 		print("bad command")
+

@@ -37,7 +37,7 @@ PORT0 = '/dev/ttyUSB0'
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one
 # scan, but on slower computers you'll get an empty map and unchanging position
 # at that rate.
-MIN_SAMPLES = 200
+MIN_SAMPLES = 50
 
 
 def mm2pix(mm):
@@ -89,8 +89,10 @@ def slam(currentProgram):
 
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:
+            print("using speeds ", SLAMvel, SLAMrot)
+            dt = time.time() - prevTime
             slam.update(distances, pose_change=(
-                (SLAMvel, SLAMrot, time.time() - prevTime)), scan_angles_degrees=angles)
+                (SLAMvel*dt, SLAMrot*dt, dt)), scan_angles_degrees=angles)
             prevTime = time.time()
             previous_distances = copy.copy(distances)
             previous_angles = copy.copy(angles)
@@ -98,8 +100,10 @@ def slam(currentProgram):
 
         # If not adequate, use previous
         elif previous_distances is not None:
+            print("using speeds ", SLAMvel, SLAMrot)
+            dt = time.time() - prevTime
             slam.update(previous_distances, pose_change=(
-                (SLAMvel, SLAMrot, time.time() - prevTime)), scan_angles_degrees=previous_angles)
+                (SLAMvel*dt, SLAMrot*dt, dt)), scan_angles_degrees=previous_angles)
             prevTime = time.time()
             # print("updated - else")
 
@@ -107,8 +111,8 @@ def slam(currentProgram):
         x, y, theta = slam.getpos()
         [x_pix, y_pix] = [mm2pix(x), mm2pix(y)]
         currentProgram.robot_pos = [
-            x_pix % constants.CHUNK_SIZE, y_pix % constants.CHUNK_SIZE]
-
+            x_pix // constants.CHUNK_SIZE, y_pix // constants.CHUNK_SIZE]
+        print("robot_pos - ",x_pix // constants.CHUNK_SIZE,y_pix // constants.CHUNK_SIZE, theta)
         # Get current map bytes as grayscale
         slam.getmap(currentProgram.mapbytes)
 
