@@ -24,7 +24,8 @@ if __name__ == "__main__":
     slamThread.start()
 
     # robot initialization
-    while (not currentProgram.roombaPort): pass
+    while (not currentProgram.roombaPort):
+        pass
     bot = create2api.Create2(currentProgram.roombaPort)
     bot.start()
     bot.safe()
@@ -46,11 +47,11 @@ if __name__ == "__main__":
     filename = os.path.join(dirname, './resources/map.bin')
 
     with open(filename, "rb") as binary_file:
-    	bytemap = bytearray(binary_file.read())
+        bytemap = bytearray(binary_file.read())
 
     # create map
     while True:
-        try: 
+        try:
             if (currentProgram.programStatus == constants.Status.START or
                 currentProgram.programStatus == constants.Status.FOUND_OBSTACLE or
                     currentProgram.programStatus == constants.Status.END_OF_PATH):
@@ -59,16 +60,17 @@ if __name__ == "__main__":
                 currMap.compress()
                 # map.printCompressedMap()
                 currMap.findWalls()
-                # currMap.chooseDestination()
-                currMap.robot_pos = [40,40]
-                currMap.dest = [41,41]
-                directions = currMap.getPath()
+                currentProgram.dest = currMap.chooseDestination(
+                    currentProgram.robot_pos)
+                directions = currMap.getPath(
+                    currentProgram.robot_pos, currentProgram.dest)
                 for step in directions:
                     currentProgram.directionsQueue.put(step)
 
             # gracefully shut down
             elif (currentProgram.programStatus == constants.Status.STOP):
-                currMap.printOverlayMap()
+                currMap.printOverlayMap(
+                    currentProgram.robot_pos, currentProgram.dest)
                 bot.drive_straight(0)
                 moveThread.join()
                 slamThread.join()
@@ -77,7 +79,3 @@ if __name__ == "__main__":
 
         except KeyboardInterrupt:
             currentProgram.programStatus = constants.Status.STOP
-
-
-
-

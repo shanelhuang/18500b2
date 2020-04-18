@@ -17,10 +17,10 @@ class Map:
 
     # attributes
     byte_map = bytearray(constants.MAP_SIZE * constants.MAP_SIZE)
-    compressed_map = [[0 for i in range(constants.NUM_CHUNKS)] for j in range(constants.NUM_CHUNKS)]
-    data_map = [[0 for i in range(constants.NUM_CHUNKS)] for j in range(constants.NUM_CHUNKS)]
-    robot_pos = [0, 0]
-    dest = [1, 1]
+    compressed_map = [[0 for i in range(constants.NUM_CHUNKS)]
+                      for j in range(constants.NUM_CHUNKS)]
+    data_map = [[0 for i in range(constants.NUM_CHUNKS)]
+                for j in range(constants.NUM_CHUNKS)]
 
     def __init__(self, byte_map):
         self.byte_map = byte_map
@@ -62,7 +62,7 @@ class Map:
         pgm_save('../resources/compressed_map.pgm', self.compressed_map,
                  (constants.NUM_CHUNKS, constants.NUM_CHUNKS))
 
-    def printOverlayMap(self):
+    def printOverlayMap(self, robot_pos, dest):
         '''
         Overlay data_map on compressed_map in color, and save to a .png file.
         '''
@@ -77,22 +77,23 @@ class Map:
                 if(datum != constants.MapData.NULL):
                     # paint data
                     if(datum == constants.MapData.WALL):
-                      pixels[j, i] = (0, 0, 255) #indices reversed for image
+                        # indices reversed for image
+                        pixels[j, i] = (0, 0, 255)
                     elif(datum == constants.MapData.PATH):
-                      pixels[j, i] = (255, 255, 0)
+                        pixels[j, i] = (255, 255, 0)
                 else:
                     # paint map
                     pixel = self.compressed_map[i][j]
                     pixels[j, i] = (pixel, pixel, pixel)
 
         # paint robot_pos and dest
-        pixels[self.robot_pos[1], self.robot_pos[0]] = (255, 0, 0)
-        pixels[self.dest[1], self.dest[0]] = (0, 255, 0)
+        pixels[robot_pos[1], robot_pos[0]] = (255, 0, 0)
+        pixels[dest[1], dest[0]] = (0, 255, 0)
 
         im.save('./resources/overlay_map.png')
         im.show()
 
-    def chooseDestination(self):
+    def chooseDestination(self, robot_pos):
         '''
         Performs a radially outward expanding search from current robot pos for 
         a square that fits the defined destination threshold for exploredness.
@@ -100,11 +101,11 @@ class Map:
 
         for distance in range(constants.MIN_SEARCH, constants.MAX_SEARCH):
             for row_offset in range(-distance, distance):
-                cur_row = self.robot_pos[0] + row_offset
+                cur_row = robot_pos[0] + row_offset
                 if(cur_row < 0 or cur_row >= constants.NUM_CHUNKS):
                     continue
                 for col_offset in range(-distance, distance):
-                    cur_col = self.robot_pos[1] + col_offset
+                    cur_col = robot_pos[1] + col_offset
                     if(cur_col < 0 or cur_col >= constants.NUM_CHUNKS):
                         continue
                     if((self.compressed_map[cur_row][cur_col] < constants.DEST_THRESHOLD) and
@@ -113,50 +114,36 @@ class Map:
                         return cur_row, cur_col
         return None
 
-    def getPath(self):
-      maze = self.data_map
-      start = (self.robot_pos[0], self.robot_pos[1])
-      end = (self.dest[0], self.dest[1])
+    def getPath(self, robot_pos, dest):
+        maze = self.data_map
+        start = (robot_pos[0], robot_pos[1])
+        end = (self.dest[0], self.dest[1])
 
-      # print(start)
-      # print(end)
-      # print(maze)
-      path = search.astar(maze, start, end)
-      # display
-      for grid in path:
-        self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
+        # print(start)
+        # print(end)
+        # print(maze)
+        path = search.astar(maze, start, end)
+        # display
+        for grid in path:
+            self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
 
-      directions = []
-      prev_pos = None
-      for step in path:
-        # first entry
-        if(prev_pos is None):
-           prev_pos = step
-           continue
-        else:
-          if(step[1] > prev_pos[1]):
-            directions.append(constants.Heading.EAST)
-          elif(step[1] < prev_pos[1]):
-            directions.append(constants.Heading.WEST)
-          elif(step[0] < prev_pos[0]):
-            directions.append(constants.Heading.NORTH)
-          elif(step[0] > prev_pos[0]):
-            directions.append(constants.Heading.SOUTH)
-          prev_pos = step
+        directions = []
+        prev_pos = None
+        for step in path:
+            # first entry
+            if(prev_pos is None):
+                prev_pos = step
+                continue
+            else:
+                if(step[1] > prev_pos[1]):
+                    directions.append(constants.Heading.EAST)
+                elif(step[1] < prev_pos[1]):
+                    directions.append(constants.Heading.WEST)
+                elif(step[0] < prev_pos[0]):
+                    directions.append(constants.Heading.NORTH)
+                elif(step[0] > prev_pos[0]):
+                    directions.append(constants.Heading.SOUTH)
+                prev_pos = step
 
-      return directions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return directions
 

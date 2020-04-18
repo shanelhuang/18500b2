@@ -61,3 +61,5 @@ class ProgramInfo():
     foundObstacle = False
     mapbytes = bytearray(MAP_SIZE * MAP_SIZE)
     roombaPort = None
+    robot_pos = [0, 0]
+    dest = [1, 1]

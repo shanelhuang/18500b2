@@ -40,6 +40,8 @@ PORT0 = '/dev/ttyUSB0'
 MIN_SAMPLES = 200
 
 
+def mm2pix(mm):
+    return int(mm / (MAP_SIZE_METERS * 1000. / MAP_SIZE_PIXELS))
 
 
 def slam(currentProgram):
@@ -63,7 +65,6 @@ def slam(currentProgram):
         iterator = lidar.iter_scans()
         lidar.stop()
         next(iterator)
-
 
     # Create an RMHC SLAM object with a laser model and optional robot model
     slam = RMHC_SLAM(LaserModel(), MAP_SIZE_PIXELS, MAP_SIZE_METERS)
@@ -104,13 +105,15 @@ def slam(currentProgram):
 
         # Get current robot position
         x, y, theta = slam.getpos()
+        [x_pix, y_pix] = [mm2pix(x), mm2pix(y)]
+        currentProgram.robot_pos = [
+            x_pix % constants.CHUNK_SIZE, y_pix % constants.CHUNK_SIZE]
 
         # Get current map bytes as grayscale
         slam.getmap(currentProgram.mapbytes)
 
-
     # Shut down the lidar connection
     pgm_save('ok.pgm', currentProgram.mapbytes,
-         (MAP_SIZE_PIXELS, MAP_SIZE_PIXELS))
+             (MAP_SIZE_PIXELS, MAP_SIZE_PIXELS))
     lidar.stop()
     lidar.disconnect()
