@@ -117,9 +117,12 @@ class Map:
       maze = self.data_map
       start = (self.robot_pos[0], self.robot_pos[1])
       end = (self.dest[0], self.dest[1])
+
+      # print(start)
+      # print(end)
+      # print(maze)
       path = search.astar(maze, start, end)
       # display
-      print(path)
       for grid in path:
         self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
 

@@ -10,9 +10,10 @@ NUM_CHUNKS = MAP_SIZE // CHUNK_SIZE
 DEST_THRESHOLD = 150  # how unexplored constitutes a valid destination
 TURN_SPEED = 100
 TURN_SPEED_DEGREES = 60
-SPEED = 200
+SPEED = 100
 MAP_SIZE_METERS = 10
-
+CHUNK_SIZE_METRES = 1/((MAP_SIZE/MAP_SIZE_METERS)/CHUNK_SIZE)
+CHUNK_MOVE_TIME = CHUNK_SIZE_METRES/(SPEED/1000)
 # turn constants
 TURN_RIGHT = 1.5
 TURN_BACK = 3
@@ -59,3 +60,4 @@ class ProgramInfo():
     directionsQueue = queue.Queue()
     foundObstacle = False
     mapbytes = bytearray(MAP_SIZE * MAP_SIZE)
+    roombaPort = None

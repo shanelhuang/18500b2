@@ -6,20 +6,22 @@ import time
 
 def run(currentProgram, bot):
     heading = constants.Heading.NORTH
-    print('move thread')
-    while True:
+    print("move thread")
+    while (currentProgram.programStatus != constants.Status.STOP):
         if(currentProgram.directionsQueue.qsize() > 0):
+            if (currentProgram.programStatus != constants.Status.RUNNING):
+                print("RUNNING")
+                currentProgram.programStatus = constants.Status.RUNNING
+
             cmd = currentProgram.directionsQueue.get()
-            print(cmd)
             if(heading == cmd):
-                print('straight')
                 # straight
                 bot.drive_straight(constants.SPEED)
                 currentProgram.SLAMvals[0] = constants.SPEED
                 currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
 
             elif(abs(heading - cmd) == 180):
-                print('backward')
                 # backwards
                 bot.turn_counter_clockwise(constants.TURN_SPEED)
                 currentProgram.SLAMvals[0] = 0
@@ -28,10 +30,10 @@ def run(currentProgram, bot):
                 bot.drive_straight(constants.SPEED)
                 currentProgram.SLAMvals[0] = constants.SPEED
                 currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
                 heading = (heading + 180) % 360
 
             elif(heading - cmd == -90 or heading - cmd == 270):
-                print('left')
                 # turn 90 left and drive
                 bot.turn_counter_clockwise(constants.TURN_SPEED)
                 currentProgram.SLAMvals[0] = 0
@@ -40,10 +42,10 @@ def run(currentProgram, bot):
                 bot.drive_straight(constants.SPEED)
                 currentProgram.SLAMvals[0] = constants.SPEED
                 currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
                 heading = (heading + 90) % 360
 
             elif(heading - cmd == 90 or heading - cmd == -270):
-                print('right')
                 # turn 90 right and drive
                 bot.turn_clockwise(constants.TURN_SPEED)
                 currentProgram.SLAMvals[0] = 0
@@ -52,4 +54,13 @@ def run(currentProgram, bot):
                 bot.drive_straight(constants.SPEED)
                 currentProgram.SLAMvals[0] = constants.SPEED
                 currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
                 heading = (heading + 270) % 360
+        else:
+            if (currentProgram.programStatus != constants.Status.END_OF_PATH):
+                print("END_OF_PATH")
+                currentProgram.programStatus = constants.Status.END_OF_PATH
+            bot.drive_straight(0)
+            currentProgram.SLAMvals[0] = 0
+            currentProgram.SLAMvals[1] = 0
+

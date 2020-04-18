@@ -104,8 +104,8 @@ class SerialCommandInterface(object):
     
     """
 
-    def __init__(self):
-        com = '/dev/ttyUSB1'  #This should not be hard coded...
+    def __init__(self,port):
+        com = port  #This should not be hard coded...
         baud = 115200
         
         self.ser = serial.Serial()
@@ -162,9 +162,9 @@ class Create2(object):
     
     """
     
-    def __init__(self):
+    def __init__(self,port):
         
-        self.SCI = SerialCommandInterface()
+        self.SCI = SerialCommandInterface(port)
         self.config = Config()
         self.config.load()
         self.decoder = sensorPacketDecoder(dict(self.config.data['sensor group packet lengths']))
