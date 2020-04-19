@@ -52,7 +52,7 @@ def slam(currentProgram):
     try:
         lidar = Lidar(PORT0)
         currentProgram.roombaPort = PORT1
-        iterator = lidar.iter_scans()
+        iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)
         print("ok")
@@ -62,7 +62,7 @@ def slam(currentProgram):
         lidar.disconnect()
         lidar = Lidar(PORT1)
         currentProgram.roombaPort = PORT0
-        iterator = lidar.iter_scans()
+        iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)
 
@@ -89,7 +89,7 @@ def slam(currentProgram):
 
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:
-            print("using speeds ", SLAMvel, SLAMrot)
+            # print("using speeds ", SLAMvel, SLAMrot)
             dt = time.time() - prevTime
             slam.update(distances, pose_change=(
                 (SLAMvel*dt, SLAMrot*dt, dt)), scan_angles_degrees=angles)
@@ -100,7 +100,7 @@ def slam(currentProgram):
 
         # If not adequate, use previous
         elif previous_distances is not None:
-            print("using speeds ", SLAMvel, SLAMrot)
+            # print("using speeds ", SLAMvel, SLAMrot)
             dt = time.time() - prevTime
             slam.update(previous_distances, pose_change=(
                 (SLAMvel*dt, SLAMrot*dt, dt)), scan_angles_degrees=previous_angles)
@@ -112,7 +112,7 @@ def slam(currentProgram):
         [x_pix, y_pix] = [mm2pix(x), mm2pix(y)]
         currentProgram.robot_pos = [
             x_pix // constants.CHUNK_SIZE, y_pix // constants.CHUNK_SIZE]
-        print("robot_pos - ",x_pix // constants.CHUNK_SIZE,y_pix // constants.CHUNK_SIZE, theta)
+        # print("robot_pos - ",x_pix // constants.CHUNK_SIZE,y_pix // constants.CHUNK_SIZE, theta)
         # Get current map bytes as grayscale
         slam.getmap(currentProgram.mapbytes)
 

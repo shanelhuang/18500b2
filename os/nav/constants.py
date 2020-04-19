@@ -30,6 +30,7 @@ class MapData(IntEnum):
     NULL = 0
     WALL = 1
     PATH = 2
+    FILL = 3
 
 
 class Heading(IntEnum):

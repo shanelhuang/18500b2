@@ -7,6 +7,7 @@ from nav.pgm_utils import pgm_save
 import io
 import numpy
 import nav.search as search
+import numpy as np
 
 
 class Map:
@@ -83,6 +84,8 @@ class Map:
                         pixels[j, i] = (0, 0, 255)
                     elif(datum == constants.MapData.PATH):
                         pixels[j, i] = (255, 255, 0)
+                    elif(datum == constants.MapData.FILL):
+                        pixels[j, i] = (255, 192, 203)
                 else:
                     # paint map
                     pixel = self.compressed_map[i][j]
@@ -122,15 +125,23 @@ class Map:
                        for j in range(constants.NUM_CHUNKS)]
         data_map = self.data_map
 
-        def enclosed(curr_pos):
-            if (visited_map[curr_pos[0]][curr_pos[1]] == constants.FILLED or curr_pos[0] < 0
-                    or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS
-                    or data_map[curr_pos[0][curr_pos[1]]] == constants.MapData.WALL):
+        def enclosed(curr_pos,depth = 0):
+            depth += 1
+            if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS 
+                    or (visited_map[curr_pos[0]][curr_pos[1]] == 1) 
+                    or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.WALL
+                    or depth > 2950):
                 return 0
             else:
-                visited_map[curr_pos[0]][curr_pos[1]] = constants.FILLED
-                return 1 + enclosed([[curr_pos[0]-1], [curr_pos[1]]]) + enclosed([[curr_pos[0]+1], [curr_pos[1]]]) + enclosed([[curr_pos[0]], [curr_pos[1]-1]]) + enclosed([[curr_pos[0]], [curr_pos[1]+1]])
+                visited_map[curr_pos[0]][curr_pos[1]] = 1
+                return 1 + enclosed([curr_pos[0]-1, curr_pos[1]],depth) + enclosed([curr_pos[0]+1, curr_pos[1]],depth) + enclosed([curr_pos[0], curr_pos[1]-1],depth) + enclosed([curr_pos[0], curr_pos[1]+1],depth)
+        
         count = enclosed(robot_pos)
+        print(count)
+        for i in range(constants.NUM_CHUNKS):
+            for j in range(constants.NUM_CHUNKS):
+                if (visited_map[i][j] == 1): data_map[i][j] = constants.MapData.FILL
+
         if (count < constants.NUM_CHUNKS * constants.NUM_CHUNKS * 0.75):
             return True
         return False
@@ -140,10 +151,13 @@ class Map:
         start = (robot_pos[0], robot_pos[1])
         end = (self.dest[0], self.dest[1])
 
-        # print(start)
-        # print(end)
-        # print(maze)
+        print(start)
+        print(end)
+        npmaze = np.asarray(maze)
+        np.save("data.txt", npmaze)
         path = search.astar(maze, start, end)
+        self.printOverlayMap()
+        print("no")
         # display
         if (path is None):
             return []

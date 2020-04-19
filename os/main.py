@@ -11,10 +11,11 @@ import sensors
 from nav.constants import MAP_SIZE_METERS as MAP_SIZE_METERS
 from nav.constants import MAP_SIZE as MAP_SIZE_PIXELS
 from rplidar import RPLidar as Lidar
+import sys
 
 
 if __name__ == "__main__":
-
+    sys.setrecursionlimit(3000) 
     currentProgram = constants.ProgramInfo()
 
     #
@@ -71,12 +72,16 @@ if __name__ == "__main__":
                     print("map completed")
                     currentProgram.programStatus = constants.Status.STOP
                 else:
+                    print("map not completed")
                     directions, badDestList = [], []
                     while (len(directions) == 0):
+                        print("in here yay")
                         currentProgram.dest = currMap.chooseDestination(
                             currentProgram.robot_pos, badDestList)
+                        print("or here")
                         directions = currMap.getPath(
                             currentProgram.robot_pos, currentProgram.dest)
+                        print("no here")
                         if (len(directions) == 0):
                             badDestList.append(currentProgram.dest)
                         print("directions", directions)

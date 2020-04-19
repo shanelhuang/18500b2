@@ -1065,13 +1065,19 @@ class sensorPacketDecoder(object):
         
             Returns: A dict of 'wheel drop and bumps'
         """
-        byte = struct.unpack('B', data)[0]
-        return_dict = {
-            'drop left': bool(byte & 0x08),
-            'drop right': bool(byte & 0x04),
-            'bump left': bool(byte & 0x02),
-            'bump right': bool(byte & 0x01)}
-        return return_dict
+        if (len(data) != 1): data = "0".encode()
+        try:
+            byte = struct.unpack('B', data)[0]
+            return_dict = {
+                'drop left': bool(byte & 0x08),
+                'drop right': bool(byte & 0x04),
+                'bump left': bool(byte & 0x02),
+                'bump right': bool(byte & 0x01)}
+            return return_dict
+        except:
+            print(type(data), data)
+            return {}
+
 
     def decode_packet_8(self, data):
         """ Decode Packet 8 (wall seen) and return its value
