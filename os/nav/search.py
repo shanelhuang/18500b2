@@ -45,7 +45,8 @@ def astar(maze, start, end):
         closed.append(current_node)
 
         # Found the goal
-        if current_node == end_node:
+        if (current_node.position[0] == end_node.position[0]) and (current_node.position[1] == end_node.position[1]):
+            print("here")
             path = []
             current = current_node
             while current is not None:
@@ -68,11 +69,13 @@ def astar(maze, start, end):
             new_node = Node(current_node, node_position)
             children.append(new_node)
 
+        # add children only if not in closed and open
         for child in children:
             # check if child is in closed list
+            add = True
             for closed_child in closed:
-                if child == closed_child:
-                    continue
+                if (child.position[0] == closed_child.position[0]) and (child.position[1] == closed_child.position[1]):
+                    add = False
 
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) **
@@ -81,7 +84,9 @@ def astar(maze, start, end):
 
             # check if child is in the open list
             for open_node in open:
-                if child == open_node and child.g > open_node.g:
-                    continue
+                if (child.position[0] == open_node.position[0]) and (child.position[1] == open_node.position[1]) :
+                    # and child.g >= open_node.g
+                    add = False
 
-            open.append(child)
+            if (add): open.append(child)
+
