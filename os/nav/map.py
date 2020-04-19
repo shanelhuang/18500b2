@@ -27,7 +27,7 @@ class Map:
 
     def compress(self):
         '''
-        Compresses the byte_map into compressed_map at a ratio defined in 
+        Compresses the byte_map into compressed_map at a ratio defined in
         constants.py.
         '''
 
@@ -47,7 +47,7 @@ class Map:
         Defines all pixels with <127 value to be a wall.
         '''
         self.data_map = [[0 for i in range(constants.NUM_CHUNKS)]
-                    for j in range(constants.NUM_CHUNKS)]
+                         for j in range(constants.NUM_CHUNKS)]
 
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
@@ -67,7 +67,7 @@ class Map:
     def printOverlayMap(self, robot_pos, dest):
         '''
         Overlay data_map on compressed_map in color, and save to a .png file.
-        ''' 
+        '''
         # print(self.data_map)
         im = PIL.Image.new(mode="RGB", size=(
             constants.NUM_CHUNKS, constants.NUM_CHUNKS))
@@ -95,9 +95,9 @@ class Map:
         im.save('./resources/overlay_map.png')
         # im.show()
 
-    def chooseDestination(self, robot_pos):
+    def chooseDestination(self, robot_pos, badDestList):
         '''
-        Performs a radially outward expanding search from current robot pos for 
+        Performs a radially outward expanding search from current robot pos for
         a square that fits the defined destination threshold for exploredness.
         '''
 
@@ -111,10 +111,29 @@ class Map:
                     if(cur_col < 0 or cur_col >= constants.NUM_CHUNKS):
                         continue
                     if((self.compressed_map[cur_row][cur_col] < constants.DEST_THRESHOLD) and
-                       constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL):
+                       constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL and
+                       constants.MapData(self.data_map[cur_row][cur_col]) not in badDestList):
                         self.dest = [cur_row, cur_col]
                         return cur_row, cur_col
         return None
+
+    def checkForCompletion(self, robot_pos):
+        visited_map = [[0 for i in range(constants.NUM_CHUNKS)]
+                       for j in range(constants.NUM_CHUNKS)]
+        data_map = self.data_map
+
+        def enclosed(curr_pos):
+            if (visited_map[curr_pos[0]][curr_pos[1]] == constants.FILLED or curr_pos[0] < 0
+                    or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS
+                    or data_map[curr_pos[0][curr_pos[1]]] == constants.MapData.WALL):
+                return 0
+            else:
+                visited_map[curr_pos[0]][curr_pos[1]] = constants.FILLED
+                return 1 + enclosed([[curr_pos[0]-1], [curr_pos[1]]]) + enclosed([[curr_pos[0]+1], [curr_pos[1]]]) + enclosed([[curr_pos[0]], [curr_pos[1]-1]]) + enclosed([[curr_pos[0]], [curr_pos[1]+1]])
+        count = enclosed(robot_pos)
+        if (count < constants.NUM_CHUNKS * constants.NUM_CHUNKS * 0.75):
+            return True
+        return False
 
     def getPath(self, robot_pos, dest):
         maze = self.data_map
@@ -126,6 +145,9 @@ class Map:
         # print(maze)
         path = search.astar(maze, start, end)
         # display
+        if (path is None):
+            return []
+
         for grid in path:
             self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
 
@@ -146,6 +168,4 @@ class Map:
                 elif(step[0] > prev_pos[0]):
                     directions.append(constants.Heading.SOUTH)
                 prev_pos = step
-
         return directions
-

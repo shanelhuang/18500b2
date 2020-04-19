@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     currentProgram = constants.ProgramInfo()
 
-    # 
+    #
 
     # slam thread
     slamThread = threading.Thread(
@@ -57,7 +57,6 @@ if __name__ == "__main__":
             if (currentProgram.programStatus == constants.Status.START or
                     currentProgram.programStatus == constants.Status.END_OF_PATH or
                     currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
-
                 if (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
                     print("obstacle!!!!!!!!!!!!!!!!!")
                     currentProgram.directionsQueue = queue.Queue()
@@ -68,20 +67,23 @@ if __name__ == "__main__":
                 currMap.compress()
                 # map.printCompressedMap()
                 currMap.findWalls()
-                currentProgram.dest = currMap.chooseDestination(
-                    currentProgram.robot_pos)
-                try:
-                    directions = currMap.getPath(
-                        currentProgram.robot_pos, currentProgram.dest)
-                    print("directions",directions)
-                except:
+                if (currMap.checkForCompletion(currentProgram.robot_pos) == True):
+                    print("map completed")
                     currentProgram.programStatus = constants.Status.STOP
-                    print("no path found!")
-
-                for step in directions:
-                    currentProgram.directionsQueue.put(step)
-                # currMap.printOverlayMap(
-                #     currentProgram.robot_pos, currentProgram.dest)
+                else:
+                    directions, badDestList = [], []
+                    while (len(directions) == 0):
+                        currentProgram.dest = currMap.chooseDestination(
+                            currentProgram.robot_pos, badDestList)
+                        directions = currMap.getPath(
+                            currentProgram.robot_pos, currentProgram.dest)
+                        if (len(directions) == 0):
+                            badDestList.append(currentProgram.dest)
+                        print("directions", directions)
+                    for step in directions:
+                        currentProgram.directionsQueue.put(step)
+                    # currMap.printOverlayMap(
+                    #     currentProgram.robot_pos, currentProgram.dest)
 
             # gracefully shut down
             elif (currentProgram.programStatus == constants.Status.STOP):

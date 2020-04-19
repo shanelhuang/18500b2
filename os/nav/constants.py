@@ -4,8 +4,8 @@ import queue
 # settings
 MAP_SIZE = 800  # pixel size of input
 CHUNK_SIZE = 10  # compression factor
-MIN_SEARCH = 3  # start searching this far away
-MAX_SEARCH = 10  # max chunks outward to search
+MIN_SEARCH = 5  # start searching this far away
+MAX_SEARCH = 20  # max chunks outward to search
 NUM_CHUNKS = MAP_SIZE // CHUNK_SIZE
 DEST_THRESHOLD = 150  # how unexplored constitutes a valid destination
 TURN_SPEED = 100
