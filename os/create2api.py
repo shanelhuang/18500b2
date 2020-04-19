@@ -146,6 +146,7 @@ class SerialCommandInterface(object):
             raise ROIFailedToReceiveError('Error reading from SCI port. No data.')
         if len(data) != num_bytes:
             raise ROIFailedToReceiveError('Error reading from SCI port. Wrong data length.')
+
         return data
     
     def Close(self):
@@ -662,7 +663,10 @@ class Create2(object):
             #Let the robot know that we want some sensor data!
             self.sensors(packet_id)
             #Read the data
-            packet_byte_data = list(self.SCI.Read(packet_size))
+            packet_byte_data = self.SCI.Read(packet_size)
+            packet_byte_data = list(packet_byte_data)
+            for i in range(len(packet_byte_data)):
+                packet_byte_data[i] = str(packet_byte_data[i]).encode()
             # Once we have the byte data, we need to decode the packet and save the new sensor state
             self.sensor_state = self.decoder.decode_packet(packet_id, packet_byte_data, self.sensor_state)
             return True
@@ -1650,6 +1654,7 @@ class sensorPacketDecoder(object):
                 byte: The byte to be decoded
             Returns: True or False
         """
+        # byte = str(byte).encode()
         return bool(struct.unpack('B', byte)[0])
     
 
@@ -1673,6 +1678,7 @@ class sensorPacketDecoder(object):
                 high: The high byte of the 2's complement.
             Returns: 16bit short
         """
+        # byte = str(low+high).encode()
         return struct.unpack('>h', high + low)[0]
         
     def decode_byte(self, byte):

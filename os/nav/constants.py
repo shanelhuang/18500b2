@@ -40,6 +40,7 @@ class Heading(IntEnum):
     NORTH = 90
     WEST = 180
     SOUTH = 270
+    BACK = 1000
 
 
 class Status(IntEnum):

@@ -46,7 +46,14 @@ def run(currentProgram, bot):
                 currentProgram.programStatus = constants.Status.RUNNING
 
             cmd = currentProgram.directionsQueue.get()
-            if(heading == cmd):
+
+            if (cmd == constants.Heading.BACK):
+                bot.drive_straight(-constants.SPEED)
+                currentProgram.SLAMvals[0] = -constants.SPEED
+                currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
+
+            elif(heading == cmd):
                 # straight
                 bot.drive_straight(constants.SPEED)
                 currentProgram.SLAMvals[0] = constants.SPEED
