@@ -1,15 +1,6 @@
 import constants
 import numpy as np
 
-f = open('vals.txt', 'r')
-maze = f.read().split(',')
-f.close()
-print(type(maze), len(maze))
-maze = np.reshape(maze, (80, 80))
-start = [40, 40]
-end = [35, 35]
-astar(maze, start, end)
-
 
 class Node():
 

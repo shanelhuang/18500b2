@@ -119,5 +119,6 @@ def slam(currentProgram):
     # Shut down the lidar connection
     pgm_save('ok.pgm', currentProgram.mapbytes,
              (MAP_SIZE_PIXELS, MAP_SIZE_PIXELS))
+
     lidar.stop()
     lidar.disconnect()
