@@ -1,4 +1,15 @@
-import nav.constants as constants
+import constants
+import numpy as np
+
+f = open('vals.txt', 'r')
+maze = f.read().split(',')
+f.close()
+print(type(maze), len(maze))
+maze = np.reshape(maze, (80, 80))
+start = [40, 40]
+end = [35, 35]
+astar(maze, start, end)
+
 
 class Node():
 
@@ -84,9 +95,9 @@ def astar(maze, start, end):
 
             # check if child is in the open list
             for open_node in open:
-                if (child.position[0] == open_node.position[0]) and (child.position[1] == open_node.position[1]) :
+                if (child.position[0] == open_node.position[0]) and (child.position[1] == open_node.position[1]):
                     # and child.g >= open_node.g
                     add = False
 
-            if (add): open.append(child)
-
+            if (add):
+                open.append(child)

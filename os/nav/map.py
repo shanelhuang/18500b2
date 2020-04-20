@@ -22,6 +22,8 @@ class Map:
                       for j in range(constants.NUM_CHUNKS)]
     data_map = [[0 for i in range(constants.NUM_CHUNKS)]
                 for j in range(constants.NUM_CHUNKS)]
+    finalCompressed_map = [[0 for i in range(constants.FINAL_NUM_CHUNKS)]
+                           for j in range(constants.FINAL_NUM_CHUNKS)]
 
     def __init__(self):
         pass
@@ -43,12 +45,28 @@ class Map:
                 avg = sum // (constants.CHUNK_SIZE * constants.CHUNK_SIZE)
                 self.compressed_map[chunk_row][chunk_col] = avg
 
+    def finalCompress(self):
+        '''
+        Compress the final user map just a litte bit
+        '''
+        for chunk_row in range(constants.FINAL_NUM_CHUNKS):
+            for chunk_col in range(constants.FINAL_NUM_CHUNKS):
+                # begin current chunk
+                sum = 0
+                for sub_row in range(constants.FINAL_CHUNK_SIZE):
+                    for sub_col in range(constants.FINAL_CHUNK_SIZE):
+                        sum += self.byte_map[(chunk_row * constants.FINAL_CHUNK_SIZE + sub_row) *
+                                             constants.MAP_SIZE + (chunk_col * constants.FINAL_CHUNK_SIZE + sub_col)]
+                avg = sum // (constants.FINAL_CHUNK_SIZE *
+                              constants.FINAL_CHUNK_SIZE)
+                self.finalCompressed_map[chunk_row][chunk_col] = avg
+
     def findWalls(self):
         '''
         Defines all pixels with <127 value to be a wall.
         '''
         temp = [[0 if (self.data_map[i][j] == constants.MapData.WALL) else self.data_map[i][j] for j in range(constants.NUM_CHUNKS)]
-                         for i in range(constants.NUM_CHUNKS)]
+                for i in range(constants.NUM_CHUNKS)]
 
         self.data_map = temp
 
@@ -103,6 +121,25 @@ class Map:
         im.save('./resources/overlay_map.png')
         # im.show()
 
+    def printUserMap()
+    '''
+    Overlap info on user's final_compressed_map in color, and save to a .png file.
+    '''
+        im = PIL.Image.new(mode="RGB", size=(
+            constants.FINAL_NUM_CHUNKS, constants.FINAL_NUM_CHUNKS))
+        pixels = im.load()
+
+       for i in range(im.size[0]):
+            for j in range(im.size[1]):
+                datum = self.final_compressed_map[i][j]
+                if(datum > 50):
+                    pixels[j,i] = (0, 0, 0)
+                else:
+                    pixels[j,i] = (255, 255, 255)
+
+        im.save('./resources/final_overlay_map.png')
+        # im.show() 
+        
     def chooseDestination(self, robot_pos, badDestList):
         '''
         Performs a radially outward expanding search from current robot pos for
@@ -130,23 +167,24 @@ class Map:
                        for j in range(constants.NUM_CHUNKS)]
         data_map = self.data_map
 
-        def enclosed(curr_pos,depth = 0):
+        def enclosed(curr_pos, depth=0):
             depth += 1
-            if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS 
-                    or (visited_map[curr_pos[0]][curr_pos[1]] == 1) 
+            if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS
+                    or (visited_map[curr_pos[0]][curr_pos[1]] == 1)
                     or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.WALL
                     or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.AVOID
                     or depth > 2950):
                 return 0
             else:
                 visited_map[curr_pos[0]][curr_pos[1]] = 1
-                return 1 + enclosed([curr_pos[0]-1, curr_pos[1]],depth) + enclosed([curr_pos[0]+1, curr_pos[1]],depth) + enclosed([curr_pos[0], curr_pos[1]-1],depth) + enclosed([curr_pos[0], curr_pos[1]+1],depth)
-        
+                return 1 + enclosed([curr_pos[0]-1, curr_pos[1]], depth) + enclosed([curr_pos[0]+1, curr_pos[1]], depth) + enclosed([curr_pos[0], curr_pos[1]-1], depth) + enclosed([curr_pos[0], curr_pos[1]+1], depth)
+
         count = enclosed(robot_pos)
         print(count)
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
-                if (visited_map[i][j] == 1): data_map[i][j] = constants.MapData.FILL
+                if (visited_map[i][j] == 1):
+                    data_map[i][j] = constants.MapData.FILL
 
         if (count < constants.NUM_CHUNKS * constants.NUM_CHUNKS * 0.75):
             return True
