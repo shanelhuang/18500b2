@@ -50,8 +50,8 @@ def slam(currentProgram):
 
     # Connect to Lidar unit
     try:
-        lidar = Lidar(PORT1)
-        currentProgram.roombaPort = PORT0
+        lidar = Lidar(PORT0)
+        currentProgram.roombaPort = PORT1
         iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)

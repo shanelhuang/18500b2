@@ -48,26 +48,30 @@ def run(currentProgram, currmap, bot):
             cmd = currentProgram.directionsQueue.get()
 
             # obsatcle hit, back up
-            if (cmd == constants.Heading.BACK):
-                bot.drive_straight(-constants.SPEED)
-                currentProgram.SLAMvals[0] = -constants.SPEED
-                currentProgram.SLAMvals[1] = 0
-                time.sleep(constants.CHUNK_MOVE_TIME)
-                
+            if (cmd == constants.Heading.BACK):                
                 # add 
                 pos = currentProgram.robot_pos
                 if (heading == constants.Heading.NORTH) : 
                     if (pos[0]-1 > 0): 
                         currmap.data_map[pos[0]-1][pos[1]] = constants.MapData.AVOID
+                        print("yes")
                 elif (heading == constants.Heading.SOUTH) : 
                     if (pos[0]+1 < constants.NUM_CHUNKS): 
-                        currmap.data_map[pos[0]+1][pos[1]] = constants.MapData.AVOID                
+                        currmap.data_map[pos[0]+1][pos[1]] = constants.MapData.AVOID        
+                        print("yes")        
                 elif (heading == constants.Heading.EAST) : 
                     if (pos[1]+1 < constants.NUM_CHUNKS): 
                         currmap.data_map[pos[0]][pos[1]+1] = constants.MapData.AVOID 
+                        print("yes")
                 else: 
                     if (pos[1]-1 > 0): 
                         currmap.data_map[pos[0]][pos[1]-1] = constants.MapData.AVOID 
+                        print("yes")
+                        
+                bot.drive_straight(-constants.SPEED)
+                currentProgram.SLAMvals[0] = -constants.SPEED
+                currentProgram.SLAMvals[1] = 0
+                time.sleep(constants.CHUNK_MOVE_TIME)
 
             elif(heading == cmd):
                 # straight

@@ -47,8 +47,10 @@ class Map:
         '''
         Defines all pixels with <127 value to be a wall.
         '''
-        self.data_map = [[0 for i in range(constants.NUM_CHUNKS)]
-                         for j in range(constants.NUM_CHUNKS)]
+        temp = [[0 if (self.data_map[i][j] == constants.MapData.WALL) else self.data_map[i][j] for j in range(constants.NUM_CHUNKS)]
+                         for i in range(constants.NUM_CHUNKS)]
+
+        self.data_map = temp
 
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
@@ -87,6 +89,7 @@ class Map:
                     elif(datum == constants.MapData.FILL):
                         pixels[j, i] = (255, 192, 203)
                     elif(datum == constants.MapData.AVOID):
+                        print("here avoid")
                         pixels[j, i] = (255, 165, 0)
                 else:
                     # paint map
@@ -132,6 +135,7 @@ class Map:
             if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS 
                     or (visited_map[curr_pos[0]][curr_pos[1]] == 1) 
                     or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.WALL
+                    or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.AVOID
                     or depth > 2950):
                 return 0
             else:
