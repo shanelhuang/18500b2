@@ -36,7 +36,7 @@ import time
 #             print("bad command")
 
 
-def run(currentProgram, bot):
+def run(currentProgram, currmap, bot):
     heading = constants.Heading.NORTH
     print("move thread")
     while (currentProgram.programStatus != constants.Status.STOP):
@@ -47,11 +47,27 @@ def run(currentProgram, bot):
 
             cmd = currentProgram.directionsQueue.get()
 
+            # obsatcle hit, back up
             if (cmd == constants.Heading.BACK):
                 bot.drive_straight(-constants.SPEED)
                 currentProgram.SLAMvals[0] = -constants.SPEED
                 currentProgram.SLAMvals[1] = 0
                 time.sleep(constants.CHUNK_MOVE_TIME)
+                
+                # add 
+                pos = currentProgram.robot_pos
+                if (heading == constants.Heading.NORTH) : 
+                    if (pos[0]-1 > 0): 
+                        currmap.data_map[pos[0]-1][pos[1]] = constants.MapData.AVOID
+                elif (heading == constants.Heading.SOUTH) : 
+                    if (pos[0]+1 < constants.NUM_CHUNKS): 
+                        currmap.data_map[pos[0]+1][pos[1]] = constants.MapData.AVOID                
+                elif (heading == constants.Heading.EAST) : 
+                    if (pos[1]+1 < constants.NUM_CHUNKS): 
+                        currmap.data_map[pos[0]][pos[1]+1] = constants.MapData.AVOID 
+                else: 
+                    if (pos[1]-1 > 0): 
+                        currmap.data_map[pos[0]][pos[1]-1] = constants.MapData.AVOID 
 
             elif(heading == cmd):
                 # straight
@@ -102,4 +118,5 @@ def run(currentProgram, bot):
             bot.drive_straight(0)
             currentProgram.SLAMvals[0] = 0
             currentProgram.SLAMvals[1] = 0
+
 

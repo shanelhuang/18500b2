@@ -17,6 +17,7 @@ import sys
 if __name__ == "__main__":
     sys.setrecursionlimit(3000) 
     currentProgram = constants.ProgramInfo()
+    currMap = map.Map()
 
     #
 
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     bot.full()
 
     # move robot thread
-    moveThread = threading.Thread(target=move.run, args=(currentProgram, bot))
+    moveThread = threading.Thread(target=move.run, args=(currentProgram, currMap, bot))
     moveThread.daemon = True
     moveThread.start()
 
@@ -64,27 +65,22 @@ if __name__ == "__main__":
                     currentProgram.directionsQueue.put(constants.Heading.BACK)
                     currentProgram.programStatus = constants.Status.RUNNING
 
-                currMap = map.Map(currentProgram.mapbytes)
+                currMap.byte_map = currentProgram.mapbytes
                 currMap.compress()
                 # map.printCompressedMap()
                 currMap.findWalls()
                 if (currMap.checkForCompletion(currentProgram.robot_pos) == True):
-                    print("map completed")
                     currentProgram.programStatus = constants.Status.STOP
                 else:
-                    print("map not completed")
                     directions, badDestList = [], []
                     while (len(directions) == 0):
-                        print("in here yay")
                         currentProgram.dest = currMap.chooseDestination(
                             currentProgram.robot_pos, badDestList)
-                        print("or here")
                         directions = currMap.getPath(
                             currentProgram.robot_pos, currentProgram.dest)
-                        print("no here")
                         if (len(directions) == 0):
                             badDestList.append(currentProgram.dest)
-                        print("directions", directions)
+                    badDestList.append(currentProgram.dest)
                     for step in directions:
                         currentProgram.directionsQueue.put(step)
                     # currMap.printOverlayMap(
@@ -92,8 +88,7 @@ if __name__ == "__main__":
 
             # gracefully shut down
             elif (currentProgram.programStatus == constants.Status.STOP):
-                currMap.printOverlayMap(
-                    currentProgram.robot_pos, currentProgram.dest)
+                currMap.printOverlayMap(currentProgram.robot_pos, currentProgram.dest)
                 bot.drive_straight(0)
                 moveThread.join()
                 slamThread.join()

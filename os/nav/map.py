@@ -23,8 +23,8 @@ class Map:
     data_map = [[0 for i in range(constants.NUM_CHUNKS)]
                 for j in range(constants.NUM_CHUNKS)]
 
-    def __init__(self, byte_map):
-        self.byte_map = byte_map
+    def __init__(self):
+        pass
 
     def compress(self):
         '''
@@ -86,6 +86,8 @@ class Map:
                         pixels[j, i] = (255, 255, 0)
                     elif(datum == constants.MapData.FILL):
                         pixels[j, i] = (255, 192, 203)
+                    elif(datum == constants.MapData.AVOID):
+                        pixels[j, i] = (255, 165, 0)
                 else:
                     # paint map
                     pixel = self.compressed_map[i][j]
@@ -151,13 +153,7 @@ class Map:
         start = (robot_pos[0], robot_pos[1])
         end = (self.dest[0], self.dest[1])
 
-        print(start)
-        print(end)
-        npmaze = np.asarray(maze)
-        np.save("data.txt", npmaze)
         path = search.astar(maze, start, end)
-        self.printOverlayMap()
-        print("no")
         # display
         if (path is None):
             return []

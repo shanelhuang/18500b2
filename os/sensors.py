@@ -11,6 +11,7 @@ def monitor(currentProgram, bot):
 		if (bot.sensor_state["wheel drop and bumps"]["bump right"] or 
 			bot.sensor_state["wheel drop and bumps"]["bump left"]):
 			currentProgram.programStatus = constants.Status.FOUND_OBSTACLE
+			# add obsatcle to map 
 		bot.get_packet(7)
 
 # bot = create2api.Create2('/dev/ttyUSB1')

@@ -3,7 +3,7 @@ import create2api
 import time
 
 
-bot = create2api.Create2('/dev/ttyUSB1')
+bot = create2api.Create2('/dev/ttyUSB0')
 bot.start()
 bot.safe()
 

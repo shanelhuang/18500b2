@@ -31,6 +31,7 @@ class MapData(IntEnum):
     WALL = 1
     PATH = 2
     FILL = 3
+    AVOID = 4
 
 
 class Heading(IntEnum):
