@@ -15,7 +15,7 @@ function importAll(r) {
 }
 
 const allMaps = importAll(
-  require.context("../images", false, /\.(png|jpe?g|svg)$/)
+  require.context("../../public/images/mapImages", false, /\.(png|jpe?g|svg)$/)
 );
 
 const Projects = () => (
