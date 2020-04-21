@@ -2,20 +2,20 @@ const data = [
   {
     path: "/",
     label: "RIP: Robotic Indoor Positioning",
-    index: true
+    index: true,
   },
   {
     path: "/about",
-    label: "About"
+    label: "About",
   },
   {
     path: "/projects",
-    label: "Visualize"
+    label: "Visualize",
   },
   {
     path: "/projects",
-    label: "Demo Vid"
-  }
+    label: "Demo Vid",
+  },
 ];
 
 export default data;
