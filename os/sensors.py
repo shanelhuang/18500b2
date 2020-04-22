@@ -17,6 +17,21 @@ def monitor(currentProgram, currmap, bot):
 			currentProgram.directionsQueue = queue.Queue() # reset queue
 			currentProgram.programStatus = constants.Status.END_OF_PATH
 
+			pos = currentProgram.robot_pos
+			print(pos)
+			if (currentProgram.heading == constants.Heading.NORTH) : 
+				if (pos[0]-2 > 0): 
+					currmap.data_map[pos[0]-2][pos[1]] = constants.MapData.AVOID
+			elif (currentProgram.heading == constants.Heading.SOUTH) : 
+				if (pos[0]+2 < constants.NUM_CHUNKS): 
+					currmap.data_map[pos[0]+2][pos[1]] = constants.MapData.AVOID        
+			elif (currentProgram.heading == constants.Heading.EAST) : 
+				if (pos[1]+2 < constants.NUM_CHUNKS): 
+					currmap.data_map[pos[0]][pos[1]+2] = constants.MapData.AVOID 
+			else: 
+				if (pos[1]-2 > 0): 
+					currmap.data_map[pos[0]][pos[1]-2] = constants.MapData.AVOID 
+
 
 		if ((bot.sensor_state["wheel drop and bumps"]["bump right"] or 
 			bot.sensor_state["wheel drop and bumps"]["bump left"]) and 

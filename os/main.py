@@ -39,7 +39,7 @@ if __name__ == "__main__":
     moveThread = threading.Thread(
     target=move.run, args=(currentProgram, bot))
     moveThread.daemon = True
-    moveThread.start()
+    # moveThread.start()
 
     # obstacle thread
     obstacleThread = threading.Thread(
@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 currMap.finalCompress()
                 currMap.printUserMap()
                 bot.drive_straight(0)
-                moveThread.join()
+                # moveThread.join()
                 slamThread.join()
                 obstacleThread.join()
                 exit(0)

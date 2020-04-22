@@ -63,7 +63,8 @@ def astar(maze, start, end):
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) - 1) or node_position[1] < 0:
                 continue
             # Make sure not a wall
-            if maze[node_position[0]][node_position[1]] == constants.MapData.WALL:
+            if ((maze[node_position[0]][node_position[1]] == constants.MapData.WALL) or 
+                (maze[node_position[0]][node_position[1]] == constants.MapData.AVOID)):
                 continue
             new_node = Node(current_node, node_position)
             children.append(new_node)

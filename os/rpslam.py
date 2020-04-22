@@ -50,8 +50,8 @@ def slam(currentProgram):
 
     # Connect to Lidar unit
     try:
-        lidar = Lidar(PORT1)
-        currentProgram.roombaPort = PORT0
+        lidar = Lidar(PORT0)
+        currentProgram.roombaPort = PORT1
         iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)
@@ -75,6 +75,8 @@ def slam(currentProgram):
     start_time = time.time()
     prevTime = start_time
 
+    trigger_start = -100
+
     while (currentProgram.programStatus != constants.Status.STOP):
 
         SLAMvel = currentProgram.SLAMvals[0]
@@ -89,13 +91,15 @@ def slam(currentProgram):
 
         l =  list(zip(angles,distances))
 
-        filtered = list(filter(lambda e: e[0]>=135 and e[0]<=225 and e[1]<300 , l))
+        filtered = list(filter(lambda e: (e[0]>=315 or e[0]<=45) and e[1]<300 , l))
         # s = sorted(l, key = lambda e: e[0])
-        trigger_start = -100
         if (len(filtered) > constants.POINTS_THRESHOLD) and (time.time()-trigger_start >5):
             currentProgram.programStatus = constants.Status.LIDAR_OBSTACLE
             print("triggered")
+            print(trigger_start)
+            print(time.time())
             trigger_start = time.time()
+
 
 
         # Update SLAM with current Lidar scan and scan angles if adequate
@@ -130,6 +134,5 @@ def slam(currentProgram):
     # Shut down the lidar connection
     pgm_save('ok.pgm', currentProgram.mapbytes,
              (MAP_SIZE_PIXELS, MAP_SIZE_PIXELS))
-
     lidar.stop()
     lidar.disconnect()

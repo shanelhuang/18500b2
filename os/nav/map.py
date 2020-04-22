@@ -145,7 +145,7 @@ class Map:
         a square that fits the defined destination threshold for exploredness.
         '''
 
-        for distance in range(constants.MIN_SEARCH, constants.MAX_SEARCH):
+        for distance in reversed(range(constants.MIN_SEARCH,constants.MAX_SEARCH)):
             for row_offset in range(-distance, distance):
                 cur_row = robot_pos[0] + row_offset
                 if(cur_row < 0 or cur_row >= constants.NUM_CHUNKS):
