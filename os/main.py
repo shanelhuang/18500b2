@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # move robot thread
     moveThread = threading.Thread(
-        target=move.run, args=(currentProgram, bot))
+    target=move.run, args=(currentProgram, bot))
     moveThread.daemon = True
     moveThread.start()
 

@@ -11,67 +11,71 @@ export default {
   mode: "development",
   entry: [
     "webpack-hot-middleware/client?path=//localhost:7999/__webpack_hmr&reload=true",
-    path.join(__dirname, "../app/entry.js")
+    path.join(__dirname, "../app/entry.js"),
   ],
   output: {
     path: path.join(__dirname, "../dist/"),
     filename: "[name].js",
-    publicPath: `${basePath}/`
+    publicPath: `${basePath}/`,
   },
   plugins: [
     new webpack.DefinePlugin({
       BASE_PATH: JSON.stringify(basePath),
       NODE_ENV: JSON.stringify(process.env.NODE_ENV || "development"),
-      GA_ID: JSON.stringify(process.env.GA_ID || "")
+      GA_ID: JSON.stringify(process.env.GA_ID || ""),
     }),
     new HtmlWebpackPlugin({
       template: "server/views/index.tpl.html",
       inject: "body",
-      filename: "index.html"
+      filename: "index.html",
     }),
     new ScriptExtHtmlWebpackPlugin({
-      defaultAttribute: "async"
+      defaultAttribute: "async",
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
   ],
   module: {
     rules: [
       {
         test: /\.js?$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "babel-loader",
       },
       {
         test: /\.md$/,
         use: [
           {
-            loader: "raw-loader"
-          }
-        ]
+            loader: "raw-loader",
+          },
+        ],
       },
       {
         test: /\.css$/,
         loader:
-          "style-loader!css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]"
+          "style-loader!css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]",
       },
       {
         test: /\.scss$/,
         loaders:
-          "style-loader!css-loader!sass-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]"
+          "style-loader!css-loader!sass-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]",
       },
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "url-loader",
         options: {
           limit: 10000,
-          mimetype: "application/font-woff"
-        }
+          mimetype: "application/font-woff",
+        },
       },
       {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader"
-      }
-    ]
-  }
+        loader: "file-loader",
+      },
+      {
+        test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
+        loader: "url-loader",
+      },
+    ],
+  },
 };
