@@ -1,5 +1,6 @@
 import nav.constants as constants
 
+
 class Node():
 
     def __init__(self, parent=None, position=None):
@@ -29,6 +30,18 @@ def astar(maze, start, end):
     end_node.g = end_node.h = end_node.f = 0
     open = []
     closed = []
+
+    def nextToWall(row, col):
+    '''
+    Return true if given position is next to wall in data_map
+    '''
+       for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            node_position = (row + new_position[0], col + new_position[1])
+            row = node_position[0]
+            col = node_position[1]
+            if (constants.MapData(self.data_map[row][col]) == constants.MapData.WALL):
+                return True
+        return False
 
     open.append(start_node)
     while len(open) > 0:
@@ -62,9 +75,12 @@ def astar(maze, start, end):
             # Make sure in range
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) - 1) or node_position[1] < 0:
                 continue
-            # Make sure not a wall
-            if ((maze[node_position[0]][node_position[1]] == constants.MapData.WALL) or 
-                (maze[node_position[0]][node_position[1]] == constants.MapData.AVOID)):
+            # Make sure not a wall or obstacle
+            if ((maze[node_position[0]][node_position[1]] == constants.MapData.WALL) or
+                    (maze[node_position[0]][node_position[1]] == constants.MapData.AVOID)):
+                continue
+            # Make sure it's not next to a wall
+            if (nextToWall(node_position[0], node_position[1])):
                 continue
             new_node = Node(current_node, node_position)
             children.append(new_node)
@@ -84,8 +100,9 @@ def astar(maze, start, end):
 
             # check if child is in the open list
             for open_node in open:
-                if (child.position[0] == open_node.position[0]) and (child.position[1] == open_node.position[1]) :
+                if (child.position[0] == open_node.position[0]) and (child.position[1] == open_node.position[1]):
                     # and child.g >= open_node.g
                     add = False
 
-            if (add): open.append(child)
+            if (add):
+                open.append(child)
