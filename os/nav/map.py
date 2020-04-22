@@ -22,7 +22,7 @@ class Map:
                       for j in range(constants.NUM_CHUNKS)]
     data_map = [[0 for i in range(constants.NUM_CHUNKS)]
                 for j in range(constants.NUM_CHUNKS)]
-    finalCompressed_map = [[0 for i in range(constants.FINAL_NUM_CHUNKS)]
+    final_compressed_map = [[0 for i in range(constants.FINAL_NUM_CHUNKS)]
                            for j in range(constants.FINAL_NUM_CHUNKS)]
 
     def __init__(self):
@@ -59,7 +59,7 @@ class Map:
                                              constants.MAP_SIZE + (chunk_col * constants.FINAL_CHUNK_SIZE + sub_col)]
                 avg = sum // (constants.FINAL_CHUNK_SIZE *
                               constants.FINAL_CHUNK_SIZE)
-                self.finalCompressed_map[chunk_row][chunk_col] = avg
+                self.final_compressed_map[chunk_row][chunk_col] = avg
 
     def findWalls(self):
         '''
@@ -97,7 +97,7 @@ class Map:
         for i in range(im.size[0]):
             for j in range(im.size[1]):
                 datum = constants.MapData(self.data_map[i][j])
-                if(datum != constants.MapData.NULL):
+                if(datum != constants.MapData.NULL and datum != constants.MapData.FILL):
                     # paint data
                     if(datum == constants.MapData.WALL):
                         # indices reversed for image
@@ -107,7 +107,6 @@ class Map:
                     elif(datum == constants.MapData.FILL):
                         pixels[j, i] = (255, 192, 203)
                     elif(datum == constants.MapData.AVOID):
-                        print("here avoid")
                         pixels[j, i] = (255, 165, 0)
                 else:
                     # paint map
@@ -121,18 +120,18 @@ class Map:
         im.save('./resources/overlay_map.png')
         # im.show()
 
-    def printUserMap()
-    '''
-    Overlap info on user's final_compressed_map in color, and save to a .png file.
-    '''
+    def printUserMap(self):
+        '''
+        Overlap info on user's final_compressed_map in color, and save to a .png file.
+        '''
         im = PIL.Image.new(mode="RGB", size=(
             constants.FINAL_NUM_CHUNKS, constants.FINAL_NUM_CHUNKS))
         pixels = im.load()
 
-       for i in range(im.size[0]):
+        for i in range(im.size[0]):
             for j in range(im.size[1]):
                 datum = self.final_compressed_map[i][j]
-                if(datum > 50):
+                if(datum < 50):
                     pixels[j,i] = (0, 0, 0)
                 else:
                     pixels[j,i] = (255, 255, 255)
@@ -180,7 +179,7 @@ class Map:
                 return 1 + enclosed([curr_pos[0]-1, curr_pos[1]], depth) + enclosed([curr_pos[0]+1, curr_pos[1]], depth) + enclosed([curr_pos[0], curr_pos[1]-1], depth) + enclosed([curr_pos[0], curr_pos[1]+1], depth)
 
         count = enclosed(robot_pos)
-        print(count)
+        print("count = ",count)
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
                 if (visited_map[i][j] == 1):

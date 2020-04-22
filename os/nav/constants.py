@@ -24,6 +24,9 @@ TURN_RIGHT = 1.5
 TURN_BACK = 3
 TURN_LEFT = 1.5
 
+# obstacle points threshold
+POINTS_THRESHOLD = 3
+
 
 # roomba conversions
 # 600mm /rotation at 100mm/s
@@ -60,6 +63,7 @@ class Status(IntEnum):
     RUNNING = 2
     END_OF_PATH = 3
     STOP = 4
+    LIDAR_OBSTACLE = 5
 
 
 # all the info about current program given to each thread
@@ -72,3 +76,4 @@ class ProgramInfo():
     roombaPort = None
     robot_pos = [0, 0]
     dest = [1, 1]
+    heading = Heading.NORTH

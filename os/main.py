@@ -15,7 +15,7 @@ import sys
 
 
 if __name__ == "__main__":
-    sys.setrecursionlimit(3000) 
+    sys.setrecursionlimit(3000)
     currentProgram = constants.ProgramInfo()
     currMap = map.Map()
 
@@ -36,13 +36,14 @@ if __name__ == "__main__":
     bot.full()
 
     # move robot thread
-    moveThread = threading.Thread(target=move.run, args=(currentProgram, currMap, bot))
+    moveThread = threading.Thread(
+        target=move.run, args=(currentProgram, bot))
     moveThread.daemon = True
     moveThread.start()
 
     # obstacle thread
     obstacleThread = threading.Thread(
-        target=sensors.monitor, args=(currentProgram, bot))
+        target=sensors.monitor, args=(currentProgram, currMap, bot))
     obstacleThread.daemon = True
     obstacleThread.start()
 
@@ -56,14 +57,10 @@ if __name__ == "__main__":
     # create map
     while True:
         try:
-            if (currentProgram.programStatus == constants.Status.START or
-                    currentProgram.programStatus == constants.Status.END_OF_PATH or
-                    currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
-                if (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
-                    print("obstacle!!!!!!!!!!!!!!!!!")
-                    currentProgram.directionsQueue = queue.Queue()
-                    currentProgram.directionsQueue.put(constants.Heading.BACK)
-                    currentProgram.programStatus = constants.Status.RUNNING
+            if (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
+                pass
+            elif (currentProgram.programStatus == constants.Status.START or
+                    currentProgram.programStatus == constants.Status.END_OF_PATH):
 
                 currMap.byte_map = currentProgram.mapbytes
                 currMap.compress()
@@ -88,11 +85,14 @@ if __name__ == "__main__":
 
             # gracefully shut down
             elif (currentProgram.programStatus == constants.Status.STOP):
-                currMap.printOverlayMap(currentProgram.robot_pos, currentProgram.dest)
+                currMap.printOverlayMap(
+                    currentProgram.robot_pos, currentProgram.dest)
+                currMap.finalCompress()
+                currMap.printUserMap()
                 bot.drive_straight(0)
                 moveThread.join()
                 slamThread.join()
-                # obstacleThread.join()
+                obstacleThread.join()
                 exit(0)
 
         except KeyboardInterrupt:

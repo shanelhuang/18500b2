@@ -50,8 +50,8 @@ def slam(currentProgram):
 
     # Connect to Lidar unit
     try:
-        lidar = Lidar(PORT0)
-        currentProgram.roombaPort = PORT1
+        lidar = Lidar(PORT1)
+        currentProgram.roombaPort = PORT0
         iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)
@@ -87,6 +87,17 @@ def slam(currentProgram):
         distances = [item[2] for item in items]
         angles = [item[1] for item in items]
 
+        l =  list(zip(angles,distances))
+
+        filtered = list(filter(lambda e: e[0]>=135 and e[0]<=225 and e[1]<300 , l))
+        # s = sorted(l, key = lambda e: e[0])
+        trigger_start = -100
+        if (len(filtered) > constants.POINTS_THRESHOLD) and (time.time()-trigger_start >5):
+            currentProgram.programStatus = constants.Status.LIDAR_OBSTACLE
+            print("triggered")
+            trigger_start = time.time()
+
+
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:
             # print("using speeds ", SLAMvel, SLAMrot)
@@ -111,7 +122,7 @@ def slam(currentProgram):
         x, y, theta = slam.getpos()
         [x_pix, y_pix] = [mm2pix(x), mm2pix(y)]
         currentProgram.robot_pos = [
-            x_pix // constants.CHUNK_SIZE, y_pix // constants.CHUNK_SIZE]
+            y_pix // constants.CHUNK_SIZE, x_pix // constants.CHUNK_SIZE]
         # print("robot_pos - ",x_pix // constants.CHUNK_SIZE,y_pix // constants.CHUNK_SIZE, theta)
         # Get current map bytes as grayscale
         slam.getmap(currentProgram.mapbytes)
