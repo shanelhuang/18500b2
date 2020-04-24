@@ -184,7 +184,6 @@ class Map:
                        constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.AVOID and
                        (cur_row,cur_col) not in badDestList and
                        search.nextToWall(cur_row, cur_col,self.data_map) == False):
-                        self.dest = [cur_row, cur_col]
                         return cur_row, cur_col
         return None
 
