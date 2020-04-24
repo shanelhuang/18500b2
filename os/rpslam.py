@@ -91,7 +91,7 @@ def slam(currentProgram):
 
         l =  list(zip(angles,distances))
 
-        filtered = list(filter(lambda e: (e[0]>=315 or e[0]<=45) and e[1]<300 , l))
+        filtered = list(filter(lambda e: (e[0]>=45 and e[0]<=135) and e[1]<300 , l))
         # s = sorted(l, key = lambda e: e[0])
         if (len(filtered) > constants.POINTS_THRESHOLD) and (time.time()-trigger_start >5):
             currentProgram.programStatus = constants.Status.LIDAR_OBSTACLE

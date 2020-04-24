@@ -73,10 +73,12 @@ if __name__ == "__main__":
                     while (len(directions) == 0):
                         currentProgram.dest = currMap.chooseDestination(
                             currentProgram.robot_pos, badDestList)
+                        print(currentProgram.dest)
                         directions = currMap.getPath(
                             currentProgram.robot_pos, currentProgram.dest)
                         if (len(directions) == 0):
                             badDestList.append(currentProgram.dest)
+                            print("appended")
                     badDestList.append(currentProgram.dest)
                     for step in directions:
                         currentProgram.directionsQueue.put(step)
@@ -85,6 +87,8 @@ if __name__ == "__main__":
 
             # gracefully shut down
             elif (currentProgram.programStatus == constants.Status.STOP):
+                currMap.getPath(
+                    currentProgram.robot_pos, currentProgram.dest)
                 currMap.printOverlayMap(
                     currentProgram.robot_pos, currentProgram.dest)
                 currMap.finalCompress()

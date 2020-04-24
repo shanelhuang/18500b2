@@ -61,22 +61,36 @@ class Map:
                               constants.FINAL_CHUNK_SIZE)
                 self.final_compressed_map[chunk_row][chunk_col] = avg
 
+
+    def addAvoidsAround(self,i,j):
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            node_position = (i + new_position[0], j + new_position[1])
+            row = node_position[0]
+            col = node_position[1]
+            if (constants.MapData(self.data_map[row][col]) != constants.MapData.WALL):
+                self.data_map[row][col] = constants.MapData.AVOID
+                # print(constants.MapData.AVOID(self.data_map[i][j]))
+
     def findWalls(self):
         '''
         Defines all pixels with <127 value to be a wall.
         '''
-        temp = [[0 if (self.data_map[i][j] == constants.MapData.WALL) else self.data_map[i][j] for j in range(constants.NUM_CHUNKS)]
+        temp = [[0 if (constants.MapData(self.data_map[i][j]) == constants.MapData.WALL) else 
+        constants.MapData(self.data_map[i][j]) for j in range(constants.NUM_CHUNKS)]
                 for i in range(constants.NUM_CHUNKS)]
 
         self.data_map = temp
 
         for i in range(constants.NUM_CHUNKS):
             for j in range(constants.NUM_CHUNKS):
-                if(self.compressed_map[i][j] < 127):
+                if( self.compressed_map[i][j] < 127):
                     self.data_map[i][j] = constants.MapData.WALL
+                    self.addAvoidsAround(i,j)
 
         # for i in range(40,61):
         #   print(self.data_map[40][i])
+
+
 
     def printCompressedMap(self):
         '''
@@ -138,25 +152,25 @@ class Map:
 
         im.save('./resources/final_overlay_map.png')
         # im.show()
+    def nextToWall(row, col):
+        ''' 
+        Return true if given position is next to wall in data_map
+        '''
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            node_position = (row + new_position[0], col + new_position[1])
+            row = node_position[0]
+            col = node_position[1]
+            if (constants.MapData(self.data_map[row][col]) == constants.MapData.WALL) or (constants.MapData(self.data_map[row][col]) == constants.MapData.AVOID):
+                return True
+        return False
 
     def chooseDestination(self, robot_pos, badDestList):
         '''
         Performs a radially outward expanding search from current robot pos for
         a square that fits the defined destination threshold for exploredness.
         '''
-        def nextToWall(row, col):
-            ''' 
-            Return true if given position is next to wall in data_map
-            '''
-            for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-                node_position = (row + new_position[0], col + new_position[1])
-                row = node_position[0]
-                col = node_position[1]
-                if (constants.MapData(self.data_map[row][col]) == constants.MapData.WALL):
-                    return True
-            return False
 
-        for distance in reversed(range(constants.MIN_SEARCH, constants.MAX_SEARCH)):
+        for distance in range(constants.MIN_SEARCH, constants.MAX_SEARCH):
             for row_offset in range(-distance, distance):
                 cur_row = robot_pos[0] + row_offset
                 if(cur_row < 0 or cur_row >= constants.NUM_CHUNKS):
@@ -167,8 +181,9 @@ class Map:
                         continue
                     if((self.compressed_map[cur_row][cur_col] < constants.DEST_THRESHOLD) and
                        constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL and
-                       constants.MapData(self.data_map[cur_row][cur_col]) not in badDestList and
-                       nextToWall(cur_row, cur_col) == False):
+                       constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.AVOID and
+                       (cur_row,cur_col) not in badDestList and
+                       search.nextToWall(cur_row, cur_col,self.data_map) == False):
                         self.dest = [cur_row, cur_col]
                         return cur_row, cur_col
         return None
@@ -182,8 +197,8 @@ class Map:
             depth += 1
             if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS
                     or (visited_map[curr_pos[0]][curr_pos[1]] == 1)
-                    or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.WALL
-                    or data_map[curr_pos[0]][curr_pos[1]] == constants.MapData.AVOID
+                    or constants.MapData(data_map[curr_pos[0]][curr_pos[1]]) == constants.MapData.WALL
+                    or constants.MapData(data_map[curr_pos[0]][curr_pos[1]]) == constants.MapData.AVOID
                     or depth > 2950):
                 return 0
             else:
@@ -204,7 +219,7 @@ class Map:
     def getPath(self, robot_pos, dest):
         maze = self.data_map
         start = (robot_pos[0], robot_pos[1])
-        end = (self.dest[0], self.dest[1])
+        end = (dest[0], dest[1])
 
         path = search.astar(maze, start, end)
         # display

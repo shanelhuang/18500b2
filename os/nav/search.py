@@ -21,6 +21,17 @@ Uses manahattan distance heuristic
 Returns list of tuples as a path from start to destination
 """
 
+def nextToWall(row, col, data_map):
+    '''
+    Return true if given position is next to wall in data_map
+    '''
+    for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+        node_position = (row + new_position[0], col + new_position[1])
+        row = node_position[0]
+        col = node_position[1]
+        if (constants.MapData(data_map[row][col]) == constants.MapData.WALL) or (constants.MapData(data_map[row][col]) == constants.MapData.AVOID):
+            return True
+    return False
 
 def astar(maze, start, end):
     # create start/end nodes, open/closed lists
@@ -31,17 +42,7 @@ def astar(maze, start, end):
     open = []
     closed = []
 
-    def nextToWall(row, col):
-    '''
-    Return true if given position is next to wall in data_map
-    '''
-       for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
-            node_position = (row + new_position[0], col + new_position[1])
-            row = node_position[0]
-            col = node_position[1]
-            if (constants.MapData(self.data_map[row][col]) == constants.MapData.WALL):
-                return True
-        return False
+
 
     open.append(start_node)
     while len(open) > 0:
@@ -76,14 +77,15 @@ def astar(maze, start, end):
             if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) - 1) or node_position[1] < 0:
                 continue
             # Make sure not a wall or obstacle
-            if ((maze[node_position[0]][node_position[1]] == constants.MapData.WALL) or
-                    (maze[node_position[0]][node_position[1]] == constants.MapData.AVOID)):
+            if ((constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.WALL) or
+                    (constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.AVOID)):
                 continue
             # Make sure it's not next to a wall
-            if (nextToWall(node_position[0], node_position[1])):
+            if (nextToWall(node_position[0], node_position[1], maze)):
                 continue
             new_node = Node(current_node, node_position)
             children.append(new_node)
+
 
         # add children only if not in closed and open
         for child in children:
