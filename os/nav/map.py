@@ -67,7 +67,7 @@ class Map:
             node_position = (i + new_position[0], j + new_position[1])
             row = node_position[0]
             col = node_position[1]
-            if (new_position[0] >=0 and new_position[0] < constants.NUM_CHUNKS and new_position[1] >=0 and new_position[1] < constants.NUM_CHUNKS):
+            if ( (node_position[0] >=0) and (node_position[0] < constants.NUM_CHUNKS) and (node_position[1] >=0) and (node_position[1] < constants.NUM_CHUNKS)):
                 if (constants.MapData(self.data_map[row][col]) != constants.MapData.WALL):
                     self.data_map[row][col] = constants.MapData.WALL_AVOID
 
@@ -87,6 +87,8 @@ class Map:
                 if( self.compressed_map[i][j] < 127):
                     self.data_map[i][j] = constants.MapData.WALL
                     self.addAvoidsAround(i,j)
+                # if(constants.MapData(self.data_map[i][j]) == constants.MapData.AVOID):
+                #     self.addAvoidsAround(i,j)
 
         # for i in range(40,61):
         #   print(self.data_map[40][i])
@@ -210,6 +212,7 @@ class Map:
                     or (visited_map[curr_pos[0]][curr_pos[1]] == 1)
                     or constants.MapData(data_map[curr_pos[0]][curr_pos[1]]) == constants.MapData.WALL
                     or constants.MapData(data_map[curr_pos[0]][curr_pos[1]]) == constants.MapData.AVOID
+                    or constants.MapData(data_map[curr_pos[0]][curr_pos[1]]) == constants.MapData.WALL_AVOID
                     or depth > 2950):
                 return 0
             else:

@@ -63,7 +63,6 @@ class Status(IntEnum):
     FOUND_OBSTACLE = 1
     RUNNING = 2
     END_OF_PATH = 3
-    STOP = 4
     LIDAR_OBSTACLE = 5
 
 
@@ -78,3 +77,5 @@ class ProgramInfo():
     robot_pos = [0, 0]
     dest = (1, 1)
     heading = Heading.NORTH
+    obstacleLocation = [0,0,0]
+    stop = False

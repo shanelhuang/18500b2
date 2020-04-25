@@ -27,6 +27,7 @@ if __name__ == "__main__":
     slamThread.daemon = True
     slamThread.start()
 
+
     # robot initialization
     while (not currentProgram.roombaPort):
         pass
@@ -34,6 +35,10 @@ if __name__ == "__main__":
     bot.start()
     bot.safe()
     bot.full()
+
+    print("intitializing")
+    time.sleep(2)
+    print("intitialized")
 
     # move robot thread
     moveThread = threading.Thread(
@@ -57,6 +62,24 @@ if __name__ == "__main__":
     # create map
     while True:
         try:
+            # gracefully shut down
+            if (currentProgram.stop):
+                currMap.getPath(
+                    currentProgram.robot_pos, currentProgram.dest)
+                currMap.printOverlayMap(
+                    currentProgram.robot_pos, currentProgram.dest)
+                currMap.finalCompress()
+                currMap.printUserMap()
+                bot.drive_straight(0)
+                print("joing threads -")
+                obstacleThread.join()
+                print("obstacle join")
+                moveThread.join()
+                print("move join")
+                slamThread.join()
+                print("slam join")
+                exit(0)
+
             if ((currentProgram.programStatus == constants.Status.FOUND_OBSTACLE) or 
             (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE)):
                 pass
@@ -69,7 +92,7 @@ if __name__ == "__main__":
                 currMap.findWalls()
                 if (currMap.checkForCompletion(currentProgram.robot_pos) == True):
                 # if False:
-                    currentProgram.programStatus = constants.Status.STOP
+                    currentProgram.stop = True
                     # pass
                 else:
                     directions, badDestList = [], []
@@ -88,24 +111,6 @@ if __name__ == "__main__":
                     # currMap.printOverlayMap(
                     #     currentProgram.robot_pos, currentProgram.dest)
 
-            # gracefully shut down
-            elif (currentProgram.programStatus == constants.Status.STOP):
-                currMap.getPath(
-                    currentProgram.robot_pos, currentProgram.dest)
-                currMap.printOverlayMap(
-                    currentProgram.robot_pos, currentProgram.dest)
-                currMap.finalCompress()
-                currMap.printUserMap()
-                bot.drive_straight(0)
-                print("joing threads -")
-                obstacleThread.join()
-                print("obstacle join")
-                moveThread.join()
-                print("move join")
-                slamThread.join()
-                print("slam join")
-                bot.stop()
-                exit(0)
 
         except KeyboardInterrupt:
-            currentProgram.programStatus = constants.Status.STOP
+            currentProgram.stop = True

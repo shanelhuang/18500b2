@@ -31,8 +31,8 @@ from rplidar import RPLidar as Lidar
 from breezyslam.sensors import RPLidarA1 as LaserModel
 from breezyslam.algorithms import RMHC_SLAM
 
-PORT1 = '/dev/ttyUSB1'
-PORT0 = '/dev/ttyUSB0'
+PORT1 = '/dev/ttyUSB0'
+PORT0 = '/dev/ttyUSB1'
 
 # Ideally we could use all 250 or so samples that the RPLidar delivers in one
 # scan, but on slower computers you'll get an empty map and unchanging position
@@ -77,7 +77,7 @@ def slam(currentProgram):
 
     trigger_start = -100
 
-    while (currentProgram.programStatus != constants.Status.STOP):
+    while (not currentProgram.stop):
 
         SLAMvel = currentProgram.SLAMvals[0]
         SLAMrot = currentProgram.SLAMvals[1]
@@ -95,7 +95,18 @@ def slam(currentProgram):
         # s = sorted(l, key = lambda e: e[0])
         if (len(filtered) > constants.POINTS_THRESHOLD) and (time.time()-trigger_start >5):
             currentProgram.programStatus = constants.Status.LIDAR_OBSTACLE
-            print("triggered")
+            topleft = list(filter(lambda e: (e[0]>=105 and e[0]<=135)  , filtered))
+            front = list(filter(lambda e: (e[0]>=75 and e[0]<=105)  , filtered))
+            topright = list(filter(lambda e: (e[0]>=45 and e[0]<=75)  , filtered))
+
+            if (len(topleft) > 2):
+                currentProgram.obstacleLocation[0] = 1
+            if (len(front) > 2):
+                currentProgram.obstacleLocation[1] = 1   
+            if (len(topright) > 2):
+                currentProgram.obstacleLocation[2] = 1  
+
+            print(currentProgram.obstacleLocation)
             trigger_start = time.time()
 
         # Update SLAM with current Lidar scan and scan angles if adequate

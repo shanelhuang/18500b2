@@ -8,29 +8,74 @@ import time
 def monitor(currentProgram, currmap, bot):
 	# json.dumps(bot.sensor_state, indent=4)
 	bot.get_packet(7)
-	while (currentProgram.programStatus != constants.Status.STOP):
+	while (not currentProgram.stop):
 
 		if (currentProgram.programStatus == constants.Status.LIDAR_OBSTACLE):
-			bot.drive_straight(0)
-			currentProgram.SLAMvals[0] = 0
-			currentProgram.SLAMvals[1] = 0
+
 			currentProgram.directionsQueue = queue.Queue() # reset queue
 
-			pos = currentProgram.robot_pos
-			print(pos)
-			if (currentProgram.heading == constants.Heading.NORTH) : 
-				if (pos[0]-2 > 0): 
-					currmap.data_map[pos[0]-2][pos[1]] = constants.MapData.AVOID
-			elif (currentProgram.heading == constants.Heading.SOUTH) : 
-				if (pos[0]+2 < constants.NUM_CHUNKS): 
-					currmap.data_map[pos[0]+2][pos[1]] = constants.MapData.AVOID        
-			elif (currentProgram.heading == constants.Heading.EAST) : 
-				if (pos[1]+2 < constants.NUM_CHUNKS): 
-					currmap.data_map[pos[0]][pos[1]+2] = constants.MapData.AVOID 
-			else: 
-				if (pos[1]-2 > 0): 
-					currmap.data_map[pos[0]][pos[1]-2] = constants.MapData.AVOID 
+			# drive back
+			bot.drive_straight(-200)
+			currentProgram.SLAMvals[0] = 0
+			currentProgram.SLAMvals[1] = 0
+			time.sleep(0.1)
+			bot.drive_straight(0)	
 
+			pos = currentProgram.robot_pos
+			print("lidar obstacle")
+			print(currentProgram.heading)
+			if (currentProgram.obstacleLocation[0]):
+				if (currentProgram.heading == constants.Heading.NORTH) : 
+					if (pos[0]-1 > 0): 
+						currmap.data_map[pos[0]-1][pos[1]-1] = constants.MapData.AVOID
+				elif (currentProgram.heading == constants.Heading.SOUTH) : 
+					if (pos[0]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]+1][pos[1]+1] = constants.MapData.AVOID        
+				elif (currentProgram.heading == constants.Heading.EAST) : 
+					if (pos[1]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]-1][pos[1]+1] = constants.MapData.AVOID 
+				else: 
+					if (pos[1]-1 > 0): 
+						currmap.data_map[pos[0]+1][pos[1]-1] = constants.MapData.AVOID 
+
+				currentProgram.obstacleLocation[0] = 0		
+
+
+			if (currentProgram.obstacleLocation[1]):
+				if (currentProgram.heading == constants.Heading.NORTH) : 
+					if (pos[0]-1 > 0): 
+						currmap.data_map[pos[0]-1][pos[1]] = constants.MapData.AVOID
+				elif (currentProgram.heading == constants.Heading.SOUTH) : 
+					if (pos[0]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]+1][pos[1]] = constants.MapData.AVOID        
+				elif (currentProgram.heading == constants.Heading.EAST) : 
+					if (pos[1]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]][pos[1]+1] = constants.MapData.AVOID 
+				else: 
+					if (pos[1]-1 > 0): 
+						currmap.data_map[pos[0]][pos[1]-1] = constants.MapData.AVOID 		
+
+				currentProgram.obstacleLocation[1] = 0		
+
+			if (currentProgram.obstacleLocation[2]):
+				if (currentProgram.heading == constants.Heading.NORTH) : 
+					if (pos[0]-1 > 0): 
+						currmap.data_map[pos[0]-1][pos[1]+1] = constants.MapData.AVOID
+				elif (currentProgram.heading == constants.Heading.SOUTH) : 
+					if (pos[0]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]+1][pos[1]-1] = constants.MapData.AVOID        
+				elif (currentProgram.heading == constants.Heading.EAST) : 
+					if (pos[1]+1 < constants.NUM_CHUNKS): 
+						currmap.data_map[pos[0]+1][pos[1]+1] = constants.MapData.AVOID 
+				else: 
+					if (pos[1]-1 > 0): 
+						currmap.data_map[pos[0]-1][pos[1]-1] = constants.MapData.AVOID 		
+
+				currentProgram.obstacleLocation[2] = 0	
+
+			print("stop???")
+
+			# currentProgram.stop = True
 			currentProgram.programStatus = constants.Status.END_OF_PATH
 
 
@@ -61,17 +106,16 @@ def monitor(currentProgram, currmap, bot):
 
 			currentProgram.directionsQueue = queue.Queue() # reset queue
 			# drive back
-			bot.drive_straight(-constants.SPEED)
-			currentProgram.SLAMvals[0] = -constants.SPEED
-			currentProgram.SLAMvals[1] = 0
-			time.sleep(constants.CHUNK_MOVE_TIME)
-			bot.drive_straight(0)
+			bot.drive_straight(-200)
 			currentProgram.SLAMvals[0] = 0
 			currentProgram.SLAMvals[1] = 0
+			time.sleep(0.1)
+			bot.drive_straight(0)
 			# reset status
 
 			currentProgram.programStatus = constants.Status.END_OF_PATH
 			bot.get_packet(7)
+
 		bot.get_packet(7)
 
 # bot = create2api.Create2('/dev/ttyUSB1')

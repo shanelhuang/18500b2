@@ -38,7 +38,7 @@ import time
 
 def run(currentProgram, bot):
     print("move thread")
-    while (currentProgram.programStatus != constants.Status.STOP):
+    while (not currentProgram.stop):
         if (currentProgram.programStatus != constants.Status.FOUND_OBSTACLE and
             currentProgram.programStatus != constants.Status.LIDAR_OBSTACLE):
             if(currentProgram.directionsQueue.qsize() > 0):
