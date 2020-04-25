@@ -1,6 +1,6 @@
 
 
-from PIL import Image
+from PIL import Image, ImageDraw
 import PIL
 import nav.constants as constants
 from nav.pgm_utils import pgm_save
@@ -133,6 +133,16 @@ class Map:
         # paint robot_pos and dest
         pixels[robot_pos[1], robot_pos[0]] = (255, 0, 0)
         pixels[dest[1], dest[0]] = (0, 255, 0)
+
+        # draw scale in bottom right
+        draw = ImageDraw.Draw(im)
+        y1 = constants.NUM_CHUNKS * 0.9
+        y2 = constants.NUM_CHUNKS * 0.9
+        x2 = constants.NUM_CHUNKS * 0.9
+        x1 = x1 - (constants.MAP_SIZE / constants.MAP_SIZE_METERS)
+        draw.line([(x1, y1), (x2, y2)], fill = "none", width = 1)
+        draw.text((x1, y1), "1 meter", font=ImageFont.load_default())
+
 
         im.save('./resources/overlay_map.png')
         # im.show()
