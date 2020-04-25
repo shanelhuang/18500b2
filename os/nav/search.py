@@ -78,11 +78,12 @@ def astar(maze, start, end):
                 continue
             # Make sure not a wall or obstacle
             if ((constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.WALL) or
-                    (constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.AVOID)):
+                    (constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.AVOID) or
+                    (constants.MapData(maze[node_position[0]][node_position[1]]) == constants.MapData.WALL_AVOID)):
                 continue
             # Make sure it's not next to a wall
-            if (nextToWall(node_position[0], node_position[1], maze)):
-                continue
+            # if (nextToWall(node_position[0], node_position[1], maze)):
+            #     continue
             new_node = Node(current_node, node_position)
             children.append(new_node)
 

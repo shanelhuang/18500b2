@@ -96,11 +96,7 @@ def slam(currentProgram):
         if (len(filtered) > constants.POINTS_THRESHOLD) and (time.time()-trigger_start >5):
             currentProgram.programStatus = constants.Status.LIDAR_OBSTACLE
             print("triggered")
-            print(trigger_start)
-            print(time.time())
             trigger_start = time.time()
-
-
 
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:

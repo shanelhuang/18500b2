@@ -15,7 +15,6 @@ def monitor(currentProgram, currmap, bot):
 			currentProgram.SLAMvals[0] = 0
 			currentProgram.SLAMvals[1] = 0
 			currentProgram.directionsQueue = queue.Queue() # reset queue
-			currentProgram.programStatus = constants.Status.END_OF_PATH
 
 			pos = currentProgram.robot_pos
 			print(pos)
@@ -31,6 +30,9 @@ def monitor(currentProgram, currmap, bot):
 			else: 
 				if (pos[1]-2 > 0): 
 					currmap.data_map[pos[0]][pos[1]-2] = constants.MapData.AVOID 
+
+			currentProgram.programStatus = constants.Status.END_OF_PATH
+
 
 
 		if ((bot.sensor_state["wheel drop and bumps"]["bump right"] or 

@@ -39,7 +39,7 @@ if __name__ == "__main__":
     moveThread = threading.Thread(
     target=move.run, args=(currentProgram, bot))
     moveThread.daemon = True
-    # moveThread.start()
+    moveThread.start()
 
     # obstacle thread
     obstacleThread = threading.Thread(
@@ -57,7 +57,8 @@ if __name__ == "__main__":
     # create map
     while True:
         try:
-            if (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE):
+            if ((currentProgram.programStatus == constants.Status.FOUND_OBSTACLE) or 
+            (currentProgram.programStatus == constants.Status.FOUND_OBSTACLE)):
                 pass
             elif (currentProgram.programStatus == constants.Status.START or
                     currentProgram.programStatus == constants.Status.END_OF_PATH):
@@ -67,7 +68,9 @@ if __name__ == "__main__":
                 # map.printCompressedMap()
                 currMap.findWalls()
                 if (currMap.checkForCompletion(currentProgram.robot_pos) == True):
+                # if False:
                     currentProgram.programStatus = constants.Status.STOP
+                    # pass
                 else:
                     directions, badDestList = [], []
                     while (len(directions) == 0):
@@ -94,9 +97,14 @@ if __name__ == "__main__":
                 currMap.finalCompress()
                 currMap.printUserMap()
                 bot.drive_straight(0)
-                # moveThread.join()
-                slamThread.join()
+                print("joing threads -")
                 obstacleThread.join()
+                print("obstacle join")
+                moveThread.join()
+                print("move join")
+                slamThread.join()
+                print("slam join")
+                bot.stop()
                 exit(0)
 
         except KeyboardInterrupt:

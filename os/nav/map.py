@@ -67,15 +67,16 @@ class Map:
             node_position = (i + new_position[0], j + new_position[1])
             row = node_position[0]
             col = node_position[1]
-            if (constants.MapData(self.data_map[row][col]) != constants.MapData.WALL):
-                self.data_map[row][col] = constants.MapData.AVOID
-                # print(constants.MapData.AVOID(self.data_map[i][j]))
+            if (new_position[0] >=0 and new_position[0] < constants.NUM_CHUNKS and new_position[1] >=0 and new_position[1] < constants.NUM_CHUNKS):
+                if (constants.MapData(self.data_map[row][col]) != constants.MapData.WALL):
+                    self.data_map[row][col] = constants.MapData.WALL_AVOID
 
     def findWalls(self):
         '''
         Defines all pixels with <127 value to be a wall.
         '''
-        temp = [[0 if (constants.MapData(self.data_map[i][j]) == constants.MapData.WALL) else 
+        temp = [[0 if ((constants.MapData(self.data_map[i][j]) == constants.MapData.WALL) or 
+            (constants.MapData(self.data_map[i][j]) == constants.MapData.WALL_AVOID)) else 
         constants.MapData(self.data_map[i][j]) for j in range(constants.NUM_CHUNKS)]
                 for i in range(constants.NUM_CHUNKS)]
 
@@ -111,7 +112,7 @@ class Map:
         for i in range(im.size[0]):
             for j in range(im.size[1]):
                 datum = constants.MapData(self.data_map[i][j])
-                if(datum != constants.MapData.NULL and datum != constants.MapData.FILL):
+                if(datum != constants.MapData.NULL):
                     # paint data
                     if(datum == constants.MapData.WALL):
                         # indices reversed for image
@@ -122,6 +123,8 @@ class Map:
                         pixels[j, i] = (255, 192, 203)
                     elif(datum == constants.MapData.AVOID):
                         pixels[j, i] = (255, 165, 0)
+                    elif(datum == constants.MapData.WALL_AVOID):
+                        pixels[j, i] = (204, 85, 0)
                 else:
                     # paint map
                     pixel = self.compressed_map[i][j]
@@ -145,7 +148,7 @@ class Map:
         for i in range(im.size[0]):
             for j in range(im.size[1]):
                 datum = self.final_compressed_map[i][j]
-                if(datum < 50):
+                if(datum < 75):
                     pixels[j, i] = (0, 0, 0)
                 else:
                     pixels[j, i] = (255, 255, 255)
@@ -182,15 +185,24 @@ class Map:
                     if((self.compressed_map[cur_row][cur_col] < constants.DEST_THRESHOLD) and
                        constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL and
                        constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.AVOID and
-                       (cur_row,cur_col) not in badDestList and
-                       search.nextToWall(cur_row, cur_col,self.data_map) == False):
+                       constants.MapData(self.data_map[cur_row][cur_col]) != constants.MapData.WALL_AVOID and
+                       (cur_row,cur_col) not in badDestList):
                         return cur_row, cur_col
         return None
 
     def checkForCompletion(self, robot_pos):
         visited_map = [[0 for i in range(constants.NUM_CHUNKS)]
                        for j in range(constants.NUM_CHUNKS)]
+
+        self.data_map[robot_pos[0]][robot_pos[1]] = constants.MapData.NULL
+
         data_map = self.data_map
+
+        summed = 0
+        for a in data_map:
+            summed += sum(a)
+
+        print("data map", summed)
 
         def enclosed(curr_pos, depth=0):
             depth += 1
@@ -206,10 +218,10 @@ class Map:
 
         count = enclosed(robot_pos)
         print("count = ", count)
-        for i in range(constants.NUM_CHUNKS):
-            for j in range(constants.NUM_CHUNKS):
-                if (visited_map[i][j] == 1):
-                    data_map[i][j] = constants.MapData.FILL
+        # for i in range(constants.NUM_CHUNKS):
+        #     for j in range(constants.NUM_CHUNKS):
+        #         if (visited_map[i][j] == 1):
+        #             data_map[i][j] = constants.MapData.FILL
 
         if (count < constants.NUM_CHUNKS * constants.NUM_CHUNKS * 0.75):
             return True
@@ -217,6 +229,8 @@ class Map:
 
     def getPath(self, robot_pos, dest):
         maze = self.data_map
+
+
         start = (robot_pos[0], robot_pos[1])
         end = (dest[0], dest[1])
 
@@ -224,6 +238,11 @@ class Map:
         # display
         if (path is None):
             return []
+
+        for i in range(constants.NUM_CHUNKS):
+            for j in range(constants.NUM_CHUNKS):
+                if (self.data_map[i][j] == constants.MapData.PATH):
+                    self.data_map[i][j] = constants.MapData.NULL
 
         for grid in path:
             self.data_map[grid[0]][grid[1]] = constants.MapData.PATH
