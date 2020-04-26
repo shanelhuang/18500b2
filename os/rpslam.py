@@ -55,9 +55,9 @@ def slam(currentProgram):
         iterator = lidar.iter_scans(1000)
         lidar.stop()
         next(iterator)
-        print("ok")
+        print("Lidar 0, Roomba 1")
     except:
-        print("here")
+        print("Roomba 0, Lidar 1")
         lidar.stop()
         lidar.disconnect()
         lidar = Lidar(PORT1)
@@ -105,8 +105,6 @@ def slam(currentProgram):
                 currentProgram.obstacleLocation[1] = 1   
             if (len(topright) > 2):
                 currentProgram.obstacleLocation[2] = 1  
-
-            print(currentProgram.obstacleLocation)
             trigger_start = time.time()
 
         # Update SLAM with current Lidar scan and scan angles if adequate

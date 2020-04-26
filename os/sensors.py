@@ -9,8 +9,9 @@ def monitor(currentProgram, currmap, bot):
 	# json.dumps(bot.sensor_state, indent=4)
 	bot.get_packet(7)
 	while (not currentProgram.stop):
-
+		# lidar sees obstacle in front
 		if (currentProgram.programStatus == constants.Status.LIDAR_OBSTACLE):
+			print("Lidar obstacle: ", currentProgram.obstacleLocation)
 
 			currentProgram.directionsQueue = queue.Queue() # reset queue
 
@@ -21,9 +22,8 @@ def monitor(currentProgram, currmap, bot):
 			time.sleep(0.1)
 			bot.drive_straight(0)	
 
+			# front-left
 			pos = currentProgram.robot_pos
-			print("lidar obstacle")
-			print(currentProgram.heading)
 			if (currentProgram.obstacleLocation[0]):
 				if (currentProgram.heading == constants.Heading.NORTH) : 
 					if (pos[0]-1 > 0): 
@@ -40,7 +40,7 @@ def monitor(currentProgram, currmap, bot):
 
 				currentProgram.obstacleLocation[0] = 0		
 
-
+			# front
 			if (currentProgram.obstacleLocation[1]):
 				if (currentProgram.heading == constants.Heading.NORTH) : 
 					if (pos[0]-1 > 0): 
@@ -57,6 +57,7 @@ def monitor(currentProgram, currmap, bot):
 
 				currentProgram.obstacleLocation[1] = 0		
 
+			# front-right
 			if (currentProgram.obstacleLocation[2]):
 				if (currentProgram.heading == constants.Heading.NORTH) : 
 					if (pos[0]-1 > 0): 
@@ -73,8 +74,6 @@ def monitor(currentProgram, currmap, bot):
 
 				currentProgram.obstacleLocation[2] = 0	
 
-			print("stop???")
-
 			# currentProgram.stop = True
 			currentProgram.programStatus = constants.Status.END_OF_PATH
 
@@ -83,14 +82,11 @@ def monitor(currentProgram, currmap, bot):
 		if ((bot.sensor_state["wheel drop and bumps"]["bump right"] or 
 			bot.sensor_state["wheel drop and bumps"]["bump left"]) and 
 			(currentProgram.programStatus != constants.Status.FOUND_OBSTACLE)):
-			print(bot.sensor_state["wheel drop and bumps"]["bump right"])
-			print(bot.sensor_state["wheel drop and bumps"]["bump left"])
-			print("obstacle!!!!!!!!!!!!!!!!!")
+			print("Bumper obstacle!")
 			currentProgram.programStatus = constants.Status.FOUND_OBSTACLE
 
 			# drive back after hitting obstacle
 			pos = currentProgram.robot_pos
-			print(pos)
 			if (currentProgram.heading == constants.Heading.NORTH) : 
 				if (pos[0]-1 > 0): 
 					currmap.data_map[pos[0]-1][pos[1]] = constants.MapData.AVOID
@@ -111,21 +107,12 @@ def monitor(currentProgram, currmap, bot):
 			currentProgram.SLAMvals[1] = 0
 			time.sleep(0.1)
 			bot.drive_straight(0)
-			# reset status
 
+			# reset status
 			currentProgram.programStatus = constants.Status.END_OF_PATH
 			bot.get_packet(7)
-
 		bot.get_packet(7)
 
-# bot = create2api.Create2('/dev/ttyUSB1')
-# bot.start()
-# bot.safe()
-# bot.full()
 
-# json.dumps(bot.sensor_state, indent=4)
-# bot.get_packet(7)
-# while True:
-# 	print(bot.sensor_state["wheel drop and bumps"]["bump right"],bot.sensor_state["wheel drop and bumps"]["bump left"])
-# 	bot.get_packet(7)
-# 	# foundObstacle[0] = True
+
+		

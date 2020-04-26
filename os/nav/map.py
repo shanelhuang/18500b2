@@ -90,11 +90,6 @@ class Map:
                 # if(constants.MapData(self.data_map[i][j]) == constants.MapData.AVOID):
                 #     self.addAvoidsAround(i,j)
 
-        # for i in range(40,61):
-        #   print(self.data_map[40][i])
-
-
-
     def printCompressedMap(self):
         '''
         Save compressed_map to a .pgm file in the /resources folder.
@@ -167,6 +162,7 @@ class Map:
 
         im.save('./resources/final_overlay_map.png')
         # im.show()
+
     def nextToWall(row, col):
         ''' 
         Return true if given position is next to wall in data_map
@@ -214,8 +210,6 @@ class Map:
         for a in data_map:
             summed += sum(a)
 
-        print("data map", summed)
-
         def enclosed(curr_pos, depth=0):
             depth += 1
             if (curr_pos[0] < 0 or curr_pos[0] >= constants.NUM_CHUNKS or curr_pos[1] < 0 or curr_pos[1] >= constants.NUM_CHUNKS
@@ -230,7 +224,8 @@ class Map:
                 return 1 + enclosed([curr_pos[0]-1, curr_pos[1]], depth) + enclosed([curr_pos[0]+1, curr_pos[1]], depth) + enclosed([curr_pos[0], curr_pos[1]-1], depth) + enclosed([curr_pos[0], curr_pos[1]+1], depth)
 
         count = enclosed(robot_pos)
-        print("count = ", count)
+        print("Floodfill: ", count, "Threshold: ", constants.NUM_CHUNKS * constants.NUM_CHUNKS * 0.75)
+
         # for i in range(constants.NUM_CHUNKS):
         #     for j in range(constants.NUM_CHUNKS):
         #         if (visited_map[i][j] == 1):
@@ -242,7 +237,6 @@ class Map:
 
     def getPath(self, robot_pos, dest):
         maze = self.data_map
-
 
         start = (robot_pos[0], robot_pos[1])
         end = (dest[0], dest[1])
