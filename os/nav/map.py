@@ -144,6 +144,59 @@ class Map:
         im.save('./resources/overlay_map.png')
         # im.show()
 
+    def printIncremental(self, robot_pos, dest, index):
+        '''
+        Overlay data_map on compressed_map in color, and save to a .png file.
+        '''
+        # print(self.data_map)
+        im = PIL.Image.new(mode="RGB", size=(
+            constants.NUM_CHUNKS, constants.NUM_CHUNKS))
+        pixels = im.load()
+
+        for i in range(im.size[0]):
+            for j in range(im.size[1]):
+                datum = constants.MapData(self.data_map[i][j])
+                if(datum != constants.MapData.NULL):
+                    # paint data
+                    if(datum == constants.MapData.WALL):
+                        # indices reversed for image
+                        pixels[j, i] = (0, 0, 255)
+                    elif(datum == constants.MapData.PATH):
+                        pixels[j, i] = (255, 255, 0)
+                    elif(datum == constants.MapData.FILL):
+                        pixels[j, i] = (255, 192, 203)
+                    elif(datum == constants.MapData.AVOID):
+                        pixels[j, i] = (255, 165, 0)
+                    elif(datum == constants.MapData.WALL_AVOID):
+                        pixels[j, i] = (204, 85, 0)
+                else:
+                    # paint map
+                    pixel = self.compressed_map[i][j]
+                    pixels[j, i] = (pixel, pixel, pixel)
+
+        # paint robot_pos and dest
+        pixels[robot_pos[1], robot_pos[0]] = (255, 0, 0)
+        pixels[dest[1], dest[0]] = (0, 255, 0)
+
+        # draw scale in bottom right
+        draw = ImageDraw.Draw(im)
+        y1 = constants.NUM_CHUNKS * 0.9
+        y2 = constants.NUM_CHUNKS * 0.9
+        x2 = constants.NUM_CHUNKS * 0.9
+        x1 = x1 - (constants.MAP_SIZE / constants.MAP_SIZE_METERS)
+        draw.line([(x1, y1), (x2, y2)], fill = "none", width = 1)
+        draw.text((x1, y1), "1 meter", font=ImageFont.load_default())
+
+        path = './resources/overlay_map_{index}.png'
+        im.save(path.format(index = index))
+        
+        '''
+        Save byte_map to a .pgm file in the /resources folder.
+        '''
+        path = './resources/byte_map_{index}.pgm'
+        pgm_save(path.format(index = index), self.byte_map,
+                 (constants.MAP_SIZE, constants.MAP_SIZE))
+
     def printUserMap(self):
         '''
         Overlap info on user's final_compressed_map in color, and save to a .png file.

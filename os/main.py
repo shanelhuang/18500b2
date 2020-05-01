@@ -22,6 +22,8 @@ if __name__ == "__main__":
     print("Initializing")
     # python default is 500, set to 3k for floodfill
     sys.setrecursionlimit(3000)
+    # map filename index
+    index = 0
 
     # thread data sharing
     currentProgram = constants.ProgramInfo()
@@ -107,6 +109,9 @@ if __name__ == "__main__":
                     print("Destination selected: ", currentProgram.dest)
                     for step in directions:
                         currentProgram.directionsQueue.put(step)
+                    currMap.printIncremental(currentProgram.robot_pos, currentProgram.dest, index)
+                    index++
+                    
                     # currMap.printOverlayMap(
                     #     currentProgram.robot_pos, currentProgram.dest)
 
