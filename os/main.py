@@ -24,6 +24,7 @@ if __name__ == "__main__":
     sys.setrecursionlimit(3000)
     # map filename index
     index = 0
+    prevTime = time.time()
 
     # thread data sharing
     currentProgram = constants.ProgramInfo()
@@ -60,6 +61,12 @@ if __name__ == "__main__":
     # create map
     while True:
         try:
+            # print incremental map every second
+            if(time.time() - prevTime >= 1):
+                currMap.printIncremental(currentProgram.robot_pos, currentProgram.dest, index)
+                index++
+                prevTime = time.time()
+
             # gracefully shut down
             if (currentProgram.stop):
                 currMap.getPath(
@@ -109,9 +116,7 @@ if __name__ == "__main__":
                     print("Destination selected: ", currentProgram.dest)
                     for step in directions:
                         currentProgram.directionsQueue.put(step)
-                    currMap.printIncremental(currentProgram.robot_pos, currentProgram.dest, index)
-                    index++
-                    
+
                     # currMap.printOverlayMap(
                     #     currentProgram.robot_pos, currentProgram.dest)
 
